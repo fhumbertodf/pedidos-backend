@@ -1,4 +1,4 @@
-package com.educandoweb.course.web.rest;
+package com.educandoweb.course.web;
 
 import com.educandoweb.course.domain.Categoria;
 import com.educandoweb.course.repository.CategoriaRepository;
@@ -51,8 +51,7 @@ public class CategoriaResource {
             throw new Exception("A new categoria cannot already have an ID " + ENTITY_NAME + " idexists");
         }
         Categoria result = categoriaRepository.save(categoria);
-        return ResponseEntity.created(new URI("/api/categorias/" + result.getId()))
-            .body(result);
+        return ResponseEntity.created(new URI("/api/categorias/" + result.getId())).body(result);
     }
 
     /**
