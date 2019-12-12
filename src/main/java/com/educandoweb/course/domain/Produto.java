@@ -1,11 +1,21 @@
 package com.educandoweb.course.domain;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 /**
  * A Produto.
@@ -27,6 +37,7 @@ public class Produto implements Serializable {
     @Column(name = "preco")
     private Double preco;
 
+    @JsonBackReference
     @ManyToMany
     @JoinTable(name = "produto_categorias",
                joinColumns = @JoinColumn(name = "produto_id", referencedColumnName = "id"),

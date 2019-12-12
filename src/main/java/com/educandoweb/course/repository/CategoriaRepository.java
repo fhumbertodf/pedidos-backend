@@ -1,14 +1,14 @@
 package com.educandoweb.course.repository;
 
-import com.educandoweb.course.domain.Categoria;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.educandoweb.course.domain.Categoria;
 
 
 /**
  * Spring Data  repository for the Categoria entity.
  */
-@SuppressWarnings("unused")
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 

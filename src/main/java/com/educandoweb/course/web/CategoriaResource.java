@@ -1,24 +1,28 @@
 package com.educandoweb.course.web;
 
-import com.educandoweb.course.domain.Categoria;
-import com.educandoweb.course.repository.CategoriaRepository;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
+
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.net.URI;
-
-import java.util.List;
-import java.util.Optional;
+import com.educandoweb.course.domain.Categoria;
+import com.educandoweb.course.repository.CategoriaRepository;
+import com.educandoweb.course.web.errors.BadRequestAlertException;
+import com.educandoweb.course.web.errors.ObjectNotFoundException;
 
 /**
  * REST controller for managing {@link com.educandoweb.course.domain.Categoria}.
@@ -45,10 +49,10 @@ public class CategoriaResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/categorias")
-    public ResponseEntity<Categoria> createCategoria(@Valid @RequestBody Categoria categoria) throws Exception {
+    public ResponseEntity<Categoria> createCategoria(@Valid @RequestBody Categoria categoria) throws URISyntaxException {
         log.debug("REST request to save Categoria : {}", categoria);
         if (categoria.getId() != null) {
-            throw new Exception("A new categoria cannot already have an ID " + ENTITY_NAME + " idexists");
+            throw new BadRequestAlertException(String.format("A new produto cannot already have an ID %s idexists", ENTITY_NAME));
         }
         Categoria result = categoriaRepository.save(categoria);
         return ResponseEntity.created(new URI("/api/categorias/" + result.getId())).body(result);
@@ -64,10 +68,10 @@ public class CategoriaResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/categorias")
-    public ResponseEntity<Categoria> updateCategoria(@Valid @RequestBody Categoria categoria) throws Exception {
+    public ResponseEntity<Categoria> updateCategoria(@Valid @RequestBody Categoria categoria) {
         log.debug("REST request to update Categoria : {}", categoria);
         if (categoria.getId() == null) {
-            throw new Exception("Invalid id " + ENTITY_NAME + " idnull");
+            throw new BadRequestAlertException(String.format("Invalid id %s idnull", ENTITY_NAME));
         }
         Categoria result = categoriaRepository.save(categoria);
         return ResponseEntity.ok().body(result);
@@ -77,15 +81,12 @@ public class CategoriaResource {
      * {@code GET  /categorias} : get all the categorias.
      *
 
-     * @param pageable the pagination information.
-
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of categorias in body.
      */
     @GetMapping("/categorias")
-    public ResponseEntity<List<Categoria>> getAllCategorias(Pageable pageable) {
-        log.debug("REST request to get a page of Categorias");
-        Page<Categoria> page = categoriaRepository.findAll(pageable);
-        return ResponseEntity.ok().body(page.getContent());
+    public List<Categoria> getAllCategorias() {
+        log.debug("REST request to get all Categorias");
+        return categoriaRepository.findAll();
     }
 
     /**
@@ -98,7 +99,8 @@ public class CategoriaResource {
     public ResponseEntity<Categoria> getCategoria(@PathVariable Long id) {
         log.debug("REST request to get Categoria : {}", id);
         Optional<Categoria> categoria = categoriaRepository.findById(id);
-        return ResponseEntity.ok().body(categoria.orElse(null));
+        Categoria result = categoria.orElseThrow(() -> new ObjectNotFoundException(String.format("Object not found %s", ENTITY_NAME)));    	
+    	return ResponseEntity.ok().body(result);
     }
 
     /**

@@ -1,24 +1,29 @@
 package com.educandoweb.course.web;
 
-import com.educandoweb.course.domain.Produto;
-import com.educandoweb.course.repository.ProdutoRepository;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
+
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.net.URI;
-
-import java.util.List;
-import java.util.Optional;
+import com.educandoweb.course.domain.Produto;
+import com.educandoweb.course.repository.ProdutoRepository;
+import com.educandoweb.course.web.errors.BadRequestAlertException;
+import com.educandoweb.course.web.errors.ObjectNotFoundException;
 
 /**
  * REST controller for managing {@link com.educandoweb.course.domain.Produto}.
@@ -45,10 +50,10 @@ public class ProdutoResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/produtos")
-    public ResponseEntity<Produto> createProduto(@Valid @RequestBody Produto produto) throws Exception {
+    public ResponseEntity<Produto> createProduto(@Valid @RequestBody Produto produto) throws URISyntaxException {
         log.debug("REST request to save Produto : {}", produto);
-        if (produto.getId() != null) {
-            throw new Exception("A new produto cannot already have an ID " + ENTITY_NAME + " idexists");
+        if (produto.getId() != null) {        
+            throw new BadRequestAlertException(String.format("A new produto cannot already have an ID %s idexists", ENTITY_NAME));
         }
         Produto result = produtoRepository.save(produto);
         return ResponseEntity.created(new URI("/api/produtos/" + result.getId())).body(result);
@@ -64,10 +69,10 @@ public class ProdutoResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/produtos")
-    public ResponseEntity<Produto> updateProduto(@Valid @RequestBody Produto produto) throws Exception {
+    public ResponseEntity<Produto> updateProduto(@Valid @RequestBody Produto produto) {
         log.debug("REST request to update Produto : {}", produto);
         if (produto.getId() == null) {
-            throw new Exception("Invalid id " + ENTITY_NAME + " idnull");
+            throw new BadRequestAlertException(String.format("Invalid id %s idnull", ENTITY_NAME));
         }
         Produto result = produtoRepository.save(produto);
         return ResponseEntity.ok().body(result);
@@ -76,22 +81,13 @@ public class ProdutoResource {
     /**
      * {@code GET  /produtos} : get all the produtos.
      *
-
-     * @param pageable the pagination information.
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of produtos in body.
      */
     @GetMapping("/produtos")
-    public ResponseEntity<List<Produto>> getAllProdutos(Pageable pageable, @RequestParam(required = false, defaultValue = "false") boolean eagerload) {
-        log.debug("REST request to get a page of Produtos");
-        Page<Produto> page;
-        if (eagerload) {
-            page = produtoRepository.findAllWithEagerRelationships(pageable);
-        } else {
-            page = produtoRepository.findAll(pageable);
-        }
-
-        return ResponseEntity.ok().body(page.getContent());
+    public List<Produto> getAllProdutos(@RequestParam(required = false, defaultValue = "false") boolean eagerload) {
+        log.debug("REST request to get all Produtos");
+        return produtoRepository.findAllWithEagerRelationships();
     }
 
     /**
@@ -104,7 +100,8 @@ public class ProdutoResource {
     public ResponseEntity<Produto> getProduto(@PathVariable Long id) {
         log.debug("REST request to get Produto : {}", id);
         Optional<Produto> produto = produtoRepository.findOneWithEagerRelationships(id);
-        return ResponseEntity.ok().body(produto.orElse(null));
+        Produto result = produto.orElseThrow(() -> new ObjectNotFoundException(String.format("Object not found %s", ENTITY_NAME)));    	
+    	return ResponseEntity.ok().body(result);
     }
 
     /**
