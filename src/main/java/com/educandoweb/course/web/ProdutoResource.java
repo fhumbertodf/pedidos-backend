@@ -100,7 +100,7 @@ public class ProdutoResource {
     public ResponseEntity<Produto> getProduto(@PathVariable Long id) {
         log.debug("REST request to get Produto : {}", id);
         Optional<Produto> produto = produtoRepository.findOneWithEagerRelationships(id);
-        Produto result = produto.orElseThrow(() -> new ObjectNotFoundException(String.format("Object not found %s", ENTITY_NAME)));    	
+        Produto result = produto.orElseThrow(() -> new ObjectNotFoundException(String.format("Invalid id %s id not found", ENTITY_NAME)));    	
     	return ResponseEntity.ok().body(result);
     }
 

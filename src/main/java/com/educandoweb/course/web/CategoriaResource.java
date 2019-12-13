@@ -52,7 +52,7 @@ public class CategoriaResource {
     public ResponseEntity<Categoria> createCategoria(@Valid @RequestBody Categoria categoria) throws URISyntaxException {
         log.debug("REST request to save Categoria : {}", categoria);
         if (categoria.getId() != null) {
-            throw new BadRequestAlertException(String.format("A new produto cannot already have an ID %s idexists", ENTITY_NAME));
+            throw new BadRequestAlertException(String.format("A new categoria cannot already have an ID %s idexists", ENTITY_NAME));
         }
         Categoria result = categoriaRepository.save(categoria);
         return ResponseEntity.created(new URI("/api/categorias/" + result.getId())).body(result);
@@ -99,7 +99,7 @@ public class CategoriaResource {
     public ResponseEntity<Categoria> getCategoria(@PathVariable Long id) {
         log.debug("REST request to get Categoria : {}", id);
         Optional<Categoria> categoria = categoriaRepository.findById(id);
-        Categoria result = categoria.orElseThrow(() -> new ObjectNotFoundException(String.format("Object not found %s", ENTITY_NAME)));    	
+        Categoria result = categoria.orElseThrow(() -> new ObjectNotFoundException(String.format("Invalid id %s id not found", ENTITY_NAME)));    	
     	return ResponseEntity.ok().body(result);
     }
 
