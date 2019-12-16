@@ -13,6 +13,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * A Estado.
  */
@@ -30,6 +32,7 @@ public class Estado implements Serializable {
     @Column(name = "nome", nullable = false)
     private String nome;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "estado")
     private Set<Cidade> cidades = new HashSet<>();
 

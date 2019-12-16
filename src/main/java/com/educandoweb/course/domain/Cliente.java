@@ -26,18 +26,21 @@ public class Cliente implements Serializable {
     @Column(name = "nome", nullable = false)
     private String nome;
 
-    @Column(name = "email")
+    @Column(name = "email", unique=true)
     private String email;
 
     @Column(name = "cpf_ou_cnpj")
     private String cpfOuCnpj;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_cliente")
-    private TipoCliente tipoCliente;
+    private Integer tipoCliente;
 
     @OneToMany(mappedBy = "cliente")
     private Set<Endereco> enderecos = new HashSet<>();
+    
+    @ElementCollection
+	@CollectionTable(name="TELEFONE")
+	private Set<String> telefones = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -88,16 +91,11 @@ public class Cliente implements Serializable {
     }
 
     public TipoCliente getTipoCliente() {
-        return tipoCliente;
+    	return TipoCliente.toEnum(tipoCliente);
     }
 
-    public Cliente tipoCliente(TipoCliente tipoCliente) {
-        this.tipoCliente = tipoCliente;
-        return this;
-    }
-
-    public void setTipoCliente(TipoCliente tipoCliente) {
-        this.tipoCliente = tipoCliente;
+    public void setTipoCliente(TipoCliente tipo) {
+        this.tipoCliente = tipo.getCod();
     }
 
     public Set<Endereco> getEnderecos() {

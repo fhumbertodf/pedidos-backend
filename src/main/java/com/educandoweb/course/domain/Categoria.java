@@ -13,8 +13,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 /**
  * A Categoria.
  */
@@ -32,7 +30,6 @@ public class Categoria implements Serializable {
     @Column(name = "nome", nullable = false)
     private String nome;
 
-    @JsonManagedReference
     @ManyToMany(mappedBy = "categorias")
     private Set<Produto> produtos = new HashSet<>();
 

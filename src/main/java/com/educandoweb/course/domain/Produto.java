@@ -15,7 +15,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * A Produto.
@@ -37,11 +37,11 @@ public class Produto implements Serializable {
     @Column(name = "preco")
     private Double preco;
 
-    @JsonBackReference
+    @JsonIgnore
     @ManyToMany
     @JoinTable(name = "produto_categorias",
-               joinColumns = @JoinColumn(name = "produto_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "categorias_id", referencedColumnName = "id"))
+               joinColumns = @JoinColumn(name = "produto_id"),
+               inverseJoinColumns = @JoinColumn(name = "categorias_id"))
     private Set<Categoria> categorias = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

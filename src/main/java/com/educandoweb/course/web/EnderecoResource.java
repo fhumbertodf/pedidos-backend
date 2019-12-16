@@ -1,23 +1,29 @@
-package com.educandoweb.course.web.rest;
+package com.educandoweb.course.web;
 
-import com.educandoweb.course.domain.Endereco;
-import com.educandoweb.course.repository.EnderecoRepository;
-import com.educandoweb.course.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
 
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import java.util.List;
-import java.util.Optional;
+import com.educandoweb.course.domain.Endereco;
+import com.educandoweb.course.repository.EnderecoRepository;
+import com.educandoweb.course.web.errors.BadRequestAlertException;
+import com.educandoweb.course.web.errors.ObjectNotFoundException;
 
 /**
  * REST controller for managing {@link com.educandoweb.course.domain.Endereco}.
@@ -50,12 +56,10 @@ public class EnderecoResource {
     public ResponseEntity<Endereco> createEndereco(@Valid @RequestBody Endereco endereco) throws URISyntaxException {
         log.debug("REST request to save Endereco : {}", endereco);
         if (endereco.getId() != null) {
-            throw new BadRequestAlertException("A new endereco cannot already have an ID", ENTITY_NAME, "idexists");
+            throw new BadRequestAlertException(String.format("A new endereco cannot already have an ID %s idexists", ENTITY_NAME));
         }
         Endereco result = enderecoRepository.save(endereco);
-        return ResponseEntity.created(new URI("/api/enderecos/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        return ResponseEntity.created(new URI("/api/enderecos/" + result.getId())).body(result);
     }
 
     /**
@@ -71,12 +75,10 @@ public class EnderecoResource {
     public ResponseEntity<Endereco> updateEndereco(@Valid @RequestBody Endereco endereco) throws URISyntaxException {
         log.debug("REST request to update Endereco : {}", endereco);
         if (endereco.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException(String.format("Invalid id %s idnull", ENTITY_NAME));
         }
         Endereco result = enderecoRepository.save(endereco);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, endereco.getId().toString()))
-            .body(result);
+        return ResponseEntity.ok().body(result);
     }
 
     /**
@@ -101,7 +103,8 @@ public class EnderecoResource {
     public ResponseEntity<Endereco> getEndereco(@PathVariable Long id) {
         log.debug("REST request to get Endereco : {}", id);
         Optional<Endereco> endereco = enderecoRepository.findById(id);
-        return ResponseUtil.wrapOrNotFound(endereco);
+        Endereco result = endereco.orElseThrow(() -> new ObjectNotFoundException(String.format("Invalid id %s id not found", ENTITY_NAME)));
+        return ResponseEntity.ok().body(result);
     }
 
     /**
@@ -114,6 +117,6 @@ public class EnderecoResource {
     public ResponseEntity<Void> deleteEndereco(@PathVariable Long id) {
         log.debug("REST request to delete Endereco : {}", id);
         enderecoRepository.deleteById(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity.noContent().build();
     }
 }

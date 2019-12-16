@@ -1,23 +1,29 @@
-package com.educandoweb.course.web.rest;
+package com.educandoweb.course.web;
 
-import com.educandoweb.course.domain.Cliente;
-import com.educandoweb.course.repository.ClienteRepository;
-import com.educandoweb.course.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
 
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import java.util.List;
-import java.util.Optional;
+import com.educandoweb.course.domain.Cliente;
+import com.educandoweb.course.repository.ClienteRepository;
+import com.educandoweb.course.web.errors.BadRequestAlertException;
+import com.educandoweb.course.web.errors.ObjectNotFoundException;
 
 /**
  * REST controller for managing {@link com.educandoweb.course.domain.Cliente}.
@@ -50,12 +56,10 @@ public class ClienteResource {
     public ResponseEntity<Cliente> createCliente(@Valid @RequestBody Cliente cliente) throws URISyntaxException {
         log.debug("REST request to save Cliente : {}", cliente);
         if (cliente.getId() != null) {
-            throw new BadRequestAlertException("A new cliente cannot already have an ID", ENTITY_NAME, "idexists");
+            throw new BadRequestAlertException(String.format("A new cliente cannot already have an ID %s idexists", ENTITY_NAME));
         }
         Cliente result = clienteRepository.save(cliente);
-        return ResponseEntity.created(new URI("/api/clientes/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        return ResponseEntity.created(new URI("/api/clientes/" + result.getId())).body(result);
     }
 
     /**
@@ -71,12 +75,10 @@ public class ClienteResource {
     public ResponseEntity<Cliente> updateCliente(@Valid @RequestBody Cliente cliente) throws URISyntaxException {
         log.debug("REST request to update Cliente : {}", cliente);
         if (cliente.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw new BadRequestAlertException(String.format("Invalid id %s idnull", ENTITY_NAME));
         }
         Cliente result = clienteRepository.save(cliente);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, cliente.getId().toString()))
-            .body(result);
+        return ResponseEntity.ok().body(result);
     }
 
     /**
@@ -101,7 +103,8 @@ public class ClienteResource {
     public ResponseEntity<Cliente> getCliente(@PathVariable Long id) {
         log.debug("REST request to get Cliente : {}", id);
         Optional<Cliente> cliente = clienteRepository.findById(id);
-        return ResponseUtil.wrapOrNotFound(cliente);
+        Cliente result = cliente.orElseThrow(() -> new ObjectNotFoundException(String.format("Invalid id %s id not found", ENTITY_NAME)));
+        return ResponseEntity.ok().body(result);
     }
 
     /**
@@ -114,6 +117,6 @@ public class ClienteResource {
     public ResponseEntity<Void> deleteCliente(@PathVariable Long id) {
         log.debug("REST request to delete Cliente : {}", id);
         clienteRepository.deleteById(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity.noContent().build();
     }
 }
