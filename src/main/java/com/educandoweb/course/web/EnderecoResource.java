@@ -9,7 +9,6 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,9 +34,6 @@ public class EnderecoResource {
     private final Logger log = LoggerFactory.getLogger(EnderecoResource.class);
 
     private static final String ENTITY_NAME = "endereco";
-
-    @Value("${jhipster.clientApp.name}")
-    private String applicationName;
 
     private final EnderecoRepository enderecoRepository;
 

@@ -1,11 +1,19 @@
 package com.educandoweb.course.domain;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import com.educandoweb.course.domain.enumeration.TipoCliente;
 
@@ -122,9 +130,18 @@ public class Cliente implements Serializable {
     public void setEnderecos(Set<Endereco> enderecos) {
         this.enderecos = enderecos;
     }
+    
+    public Set<String> getTelefones() {
+		return telefones;
+	}
+
+	public void setTelefones(Set<String> telefones) {
+		this.telefones = telefones;
+	}    
+    
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
-    @Override
+	@Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
