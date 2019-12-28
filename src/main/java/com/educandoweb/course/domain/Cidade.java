@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 /**
  * A Cidade.
@@ -25,13 +24,11 @@ public class Cidade implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @Column(name = "nome", nullable = false)
+    @Column(name = "nome")
     private String nome;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name="estado_id")
-    @NotNull
     private Estado estado;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

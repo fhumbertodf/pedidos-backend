@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -13,9 +14,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import com.educandoweb.course.domain.enumeration.TipoCliente;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * A Cliente.
@@ -30,11 +31,11 @@ public class Cliente implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @Column(name = "nome", nullable = false)
+    @Column(name = "nome")
     private String nome;
 
-    @Column(name = "email", unique=true)
+    
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "cpf_ou_cnpj")
@@ -43,12 +44,16 @@ public class Cliente implements Serializable {
     @Column(name = "tipo_cliente")
     private Integer tipoCliente;
 
-    @OneToMany(mappedBy = "cliente")
+    @OneToMany(mappedBy = "cliente", cascade=CascadeType.ALL)
     private Set<Endereco> enderecos = new HashSet<>();
-    
+
     @ElementCollection
 	@CollectionTable(name="TELEFONE")
 	private Set<String> telefones = new HashSet<>();
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "cliente")
+    private Set<Pedido> pedidos = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -99,11 +104,16 @@ public class Cliente implements Serializable {
     }
 
     public TipoCliente getTipoCliente() {
-    	return TipoCliente.toEnum(tipoCliente);
+        return TipoCliente.toEnum(tipoCliente);
     }
 
-    public void setTipoCliente(TipoCliente tipo) {
-        this.tipoCliente = tipo.getCod();
+    public Cliente tipoCliente(TipoCliente tipoCliente) {
+        this.tipoCliente = tipoCliente.getCod();
+        return this;
+    }
+
+    public void setTipoCliente(TipoCliente tipoCliente) {
+        this.tipoCliente = tipoCliente.getCod();
     }
 
     public Set<Endereco> getEnderecos() {
@@ -130,18 +140,57 @@ public class Cliente implements Serializable {
     public void setEnderecos(Set<Endereco> enderecos) {
         this.enderecos = enderecos;
     }
-    
-    public Set<String> getTelefones() {
-		return telefones;
-	}
 
-	public void setTelefones(Set<String> telefones) {
-		this.telefones = telefones;
-	}    
-    
+    public Set<String> getTelefones() {
+        return telefones;
+    }
+
+    public Cliente telefones(Set<String> telefones) {
+        this.telefones = telefones;
+        return this;
+    }
+
+    public Cliente addTelefones(String telefone) {
+        this.telefones.add(telefone);
+        return this;
+    }
+
+    public Cliente removeTelefones(String telefone) {
+        this.telefones.remove(telefone);
+        return this;
+    }
+
+    public void setTelefones(Set<String> strings) {
+        this.telefones = strings;
+    }
+
+    public Set<Pedido> getPedidos() {
+        return pedidos;
+    }
+
+    public Cliente pedidos(Set<Pedido> pedidos) {
+        this.pedidos = pedidos;
+        return this;
+    }
+
+    public Cliente addPedidos(Pedido pedido) {
+        this.pedidos.add(pedido);
+        pedido.setCliente(this);
+        return this;
+    }
+
+    public Cliente removePedidos(Pedido pedido) {
+        this.pedidos.remove(pedido);
+        pedido.setCliente(null);
+        return this;
+    }
+
+    public void setPedidos(Set<Pedido> pedidos) {
+        this.pedidos = pedidos;
+    }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
-	@Override
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

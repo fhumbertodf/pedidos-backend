@@ -1,21 +1,11 @@
 package com.educandoweb.course.domain;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * A Produto.
@@ -30,8 +20,7 @@ public class Produto implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @Column(name = "nome", nullable = false)
+    @Column(name = "nome")
     private String nome;
 
     @Column(name = "preco")
@@ -43,6 +32,10 @@ public class Produto implements Serializable {
                joinColumns = @JoinColumn(name = "produto_id"),
                inverseJoinColumns = @JoinColumn(name = "categorias_id"))
     private Set<Categoria> categorias = new HashSet<>();
+
+    @JsonIgnore
+	@OneToMany(mappedBy="id.produto")
+    private Set<ItemPedido> itens = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -102,6 +95,29 @@ public class Produto implements Serializable {
 
     public void setCategorias(Set<Categoria> categorias) {
         this.categorias = categorias;
+    }
+
+    public Set<ItemPedido> getItens() {
+        return itens;
+    }
+
+    public Produto itens(Set<ItemPedido> itemPedidos) {
+        this.itens = itemPedidos;
+        return this;
+    }
+
+    public Produto addItens(ItemPedido itemPedido) {
+        this.itens.add(itemPedido);
+        return this;
+    }
+
+    public Produto removeItens(ItemPedido itemPedido) {
+        this.itens.remove(itemPedido);
+        return this;
+    }
+
+    public void setItens(Set<ItemPedido> itemPedidos) {
+        this.itens = itemPedidos;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
