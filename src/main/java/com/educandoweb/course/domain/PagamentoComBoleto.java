@@ -1,6 +1,6 @@
 package com.educandoweb.course.domain;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,36 +21,36 @@ public class PagamentoComBoleto extends Pagamento {
 
     @JsonFormat(pattern="dd/MM/yyyy")
 	@Column(name = "data_vencimento")
-    private LocalDate dataVencimento;
+    private Date dataVencimento;
 
     @JsonFormat(pattern="dd/MM/yyyy")
     @Column(name = "data_pagamento")
-    private LocalDate dataPagamento;
+    private Date dataPagamento;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
-    public LocalDate getDataVencimento() {
+    public Date getDataVencimento() {
         return dataVencimento;
     }
 
-    public PagamentoComBoleto dataVencimento(LocalDate dataVencimento) {
+    public PagamentoComBoleto dataVencimento(Date dataVencimento) {
         this.dataVencimento = dataVencimento;
         return this;
     }
 
-    public void setDataVencimento(LocalDate dataVencimento) {
+    public void setDataVencimento(Date dataVencimento) {
         this.dataVencimento = dataVencimento;
     }
 
-    public LocalDate getDataPagamento() {
+    public Date getDataPagamento() {
         return dataPagamento;
     }
 
-    public PagamentoComBoleto dataPagamento(LocalDate dataPagamento) {
+    public PagamentoComBoleto dataPagamento(Date dataPagamento) {
         this.dataPagamento = dataPagamento;
         return this;
     }
 
-    public void setDataPagamento(LocalDate dataPagamento) {
+    public void setDataPagamento(Date dataPagamento) {
         this.dataPagamento = dataPagamento;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove

@@ -1,6 +1,6 @@
 package com.educandoweb.course.domain;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,7 +33,7 @@ public class Pedido implements Serializable {
 
     @JsonFormat(pattern="dd/MM/yyyy HH:mm")
     @Column(name = "instante")
-    private LocalDate instante;
+    private Date instante;
 
     @OneToOne(mappedBy = "pedido", cascade=CascadeType.ALL)
     private Pagamento pagamento;
@@ -58,16 +58,16 @@ public class Pedido implements Serializable {
         this.id = id;
     }
 
-    public LocalDate getInstante() {
+    public Date getInstante() {
         return instante;
     }
 
-    public Pedido instante(LocalDate instante) {
+    public Pedido instante(Date instante) {
         this.instante = instante;
         return this;
     }
 
-    public void setInstante(LocalDate instante) {
+    public void setInstante(Date instante) {
         this.instante = instante;
     }
 
