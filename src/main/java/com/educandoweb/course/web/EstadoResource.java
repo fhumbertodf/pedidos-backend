@@ -54,10 +54,8 @@ public class EstadoResource {
         if (estado.getId() != null) {
             throw new BadRequestAlertException(String.format("A new estado cannot already have an ID %s idexists", ENTITY_NAME));
         }
-        Estado result = estadoRepository.save(estado);
-        
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();
-        
+        Estado result = estadoRepository.save(estado);        
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();        
         return ResponseEntity.created(uri).body(result);        
     }
 

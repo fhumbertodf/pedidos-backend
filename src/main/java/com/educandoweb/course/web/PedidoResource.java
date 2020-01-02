@@ -55,10 +55,8 @@ public class PedidoResource {
         if (pedido.getId() != null) {
             throw new BadRequestAlertException(String.format("A new pedido cannot already have an ID %s idexists", ENTITY_NAME));
         }
-        Pedido result = pedidoRepository.save(pedido);
-        
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();
-        
+        Pedido result = pedidoRepository.save(pedido);        
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();        
         return ResponseEntity.created(uri).body(result);        
     }
 

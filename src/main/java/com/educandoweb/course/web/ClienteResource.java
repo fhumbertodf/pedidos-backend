@@ -54,10 +54,8 @@ public class ClienteResource {
         if (cliente.getId() != null) {
             throw new BadRequestAlertException(String.format("A new cliente cannot already have an ID %s idexists", ENTITY_NAME));
         }
-        Cliente result = clienteRepository.save(cliente);
-        
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();
-        
+        Cliente result = clienteRepository.save(cliente);        
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();        
         return ResponseEntity.created(uri).body(result);
     }
 

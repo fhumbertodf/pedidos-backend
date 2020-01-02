@@ -54,10 +54,8 @@ public class CategoriaResource {
         if (categoria.getId() != null) {
             throw new BadRequestAlertException(String.format("A new categoria cannot already have an ID %s idexists", ENTITY_NAME));
         }
-        Categoria result = categoriaRepository.save(categoria);
-        
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();
-        
+        Categoria result = categoriaRepository.save(categoria);        
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();        
         return ResponseEntity.created(uri).body(result);
     }
 

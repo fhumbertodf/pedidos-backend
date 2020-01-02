@@ -55,10 +55,8 @@ public class ProdutoResource {
         if (produto.getId() != null) {        
             throw new BadRequestAlertException(String.format("A new produto cannot already have an ID %s idexists", ENTITY_NAME));
         }
-        Produto result = produtoRepository.save(produto);
-        
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();
-        
+        Produto result = produtoRepository.save(produto);        
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();        
         return ResponseEntity.created(uri).body(result);        
     }
 
