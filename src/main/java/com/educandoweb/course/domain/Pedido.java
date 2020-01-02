@@ -75,22 +75,12 @@ public class Pedido implements Serializable {
         return pagamento;
     }
 
-    public Pedido pagamento(Pagamento pagamento) {
-        this.pagamento = pagamento;
-        return this;
-    }
-
     public void setPagamento(Pagamento pagamento) {
         this.pagamento = pagamento;
     }
 
     public Cliente getCliente() {
         return cliente;
-    }
-
-    public Pedido cliente(Cliente cliente) {
-        this.cliente = cliente;
-        return this;
     }
 
     public void setCliente(Cliente cliente) {
@@ -101,22 +91,12 @@ public class Pedido implements Serializable {
         return enderecoDeEntrega;
     }
 
-    public Pedido enderecoDeEntrega(Endereco endereco) {
-        this.enderecoDeEntrega = endereco;
-        return this;
-    }
-
     public void setEnderecoDeEntrega(Endereco endereco) {
         this.enderecoDeEntrega = endereco;
     }
 
     public Set<ItemPedido> getItens() {
         return itens;
-    }
-
-    public Pedido itens(Set<ItemPedido> itemPedidos) {
-        this.itens = itemPedidos;
-        return this;
     }
 
     public Pedido addItens(ItemPedido itemPedido) {

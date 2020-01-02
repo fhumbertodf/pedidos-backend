@@ -128,22 +128,12 @@ public class Endereco implements Serializable {
         return cliente;
     }
 
-    public Endereco cliente(Cliente cliente) {
-        this.cliente = cliente;
-        return this;
-    }
-
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
 
     public Cidade getCidade() {
         return cidade;
-    }
-
-    public Endereco cidade(Cidade cidade) {
-        this.cidade = cidade;
-        return this;
     }
 
     public void setCidade(Cidade cidade) {

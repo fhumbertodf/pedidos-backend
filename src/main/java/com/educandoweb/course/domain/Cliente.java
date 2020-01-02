@@ -120,11 +120,6 @@ public class Cliente implements Serializable {
         return enderecos;
     }
 
-    public Cliente enderecos(Set<Endereco> enderecos) {
-        this.enderecos = enderecos;
-        return this;
-    }
-
     public Cliente addEnderecos(Endereco endereco) {
         this.enderecos.add(endereco);
         endereco.setCliente(this);
@@ -145,11 +140,6 @@ public class Cliente implements Serializable {
         return telefones;
     }
 
-    public Cliente telefones(Set<String> telefones) {
-        this.telefones = telefones;
-        return this;
-    }
-
     public Cliente addTelefones(String telefone) {
         this.telefones.add(telefone);
         return this;
@@ -166,11 +156,6 @@ public class Cliente implements Serializable {
 
     public Set<Pedido> getPedidos() {
         return pedidos;
-    }
-
-    public Cliente pedidos(Set<Pedido> pedidos) {
-        this.pedidos = pedidos;
-        return this;
     }
 
     public Cliente addPedidos(Pedido pedido) {

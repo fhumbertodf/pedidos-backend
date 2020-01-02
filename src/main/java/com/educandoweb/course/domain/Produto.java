@@ -76,11 +76,6 @@ public class Produto implements Serializable {
         return categorias;
     }
 
-    public Produto categorias(Set<Categoria> categorias) {
-        this.categorias = categorias;
-        return this;
-    }
-
     public Produto addCategorias(Categoria categoria) {
         this.categorias.add(categoria);
         categoria.getProdutos().add(this);
@@ -99,11 +94,6 @@ public class Produto implements Serializable {
 
     public Set<ItemPedido> getItens() {
         return itens;
-    }
-
-    public Produto itens(Set<ItemPedido> itemPedidos) {
-        this.itens = itemPedidos;
-        return this;
     }
 
     public Produto addItens(ItemPedido itemPedido) {

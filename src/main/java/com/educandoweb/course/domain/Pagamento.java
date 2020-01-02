@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @Entity
 @Table(name = "pagamento")
 @Inheritance(strategy=InheritanceType.JOINED)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 public abstract class Pagamento implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,11 +63,6 @@ public abstract class Pagamento implements Serializable {
 
     public Pedido getPedido() {
         return pedido;
-    }
-
-    public Pagamento pedido(Pedido pedido) {
-        this.pedido = pedido;
-        return this;
     }
 
     public void setPedido(Pedido pedido) {

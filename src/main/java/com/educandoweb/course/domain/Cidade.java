@@ -57,11 +57,6 @@ public class Cidade implements Serializable {
         return estado;
     }
 
-    public Cidade estado(Estado estado) {
-        this.estado = estado;
-        return this;
-    }
-
     public void setEstado(Estado estado) {
         this.estado = estado;
     }

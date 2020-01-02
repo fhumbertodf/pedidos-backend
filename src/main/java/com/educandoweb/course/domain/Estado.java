@@ -60,11 +60,6 @@ public class Estado implements Serializable {
         return cidades;
     }
 
-    public Estado cidades(Set<Cidade> cidades) {
-        this.cidades = cidades;
-        return this;
-    }
-
     public Estado addCidades(Cidade cidade) {
         this.cidades.add(cidade);
         cidade.setEstado(this);

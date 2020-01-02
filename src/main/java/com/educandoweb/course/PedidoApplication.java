@@ -103,15 +103,15 @@ public class PedidoApplication implements CommandLineRunner {
 
 		Cidade c1 = new Cidade();
 		c1.setNome("Uberlândia");
-		c1.estado(est1);
+		c1.setEstado(est1);
 
 		Cidade c2 = new Cidade();
 		c2.setNome("São Paulo");
-		c2.estado(est2);
+		c2.setEstado(est2);
 
 		Cidade c3 = new Cidade();
 		c3.setNome("Campinas");
-		c3.estado(est2);
+		c3.setEstado(est2);
 
 		est1.setCidades(new HashSet<Cidade>(Arrays.asList(c1)));
 		est2.setCidades(new HashSet<Cidade>(Arrays.asList(c2, c3)));
