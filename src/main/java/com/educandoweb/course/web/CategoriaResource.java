@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.educandoweb.course.domain.Categoria;
 import com.educandoweb.course.repository.CategoriaRepository;
 import com.educandoweb.course.web.errors.BadRequestAlertException;
-import com.educandoweb.course.web.errors.ObjectNotFoundException;
 
 /**
  * REST controller for managing {@link com.educandoweb.course.domain.Categoria}.
@@ -99,7 +98,7 @@ public class CategoriaResource {
     public ResponseEntity<Categoria> getCategoria(@PathVariable Long id) {
         log.debug("REST request to get Categoria : {}", id);
         Optional<Categoria> categoria = categoriaRepository.findById(id);
-        Categoria result = categoria.orElseThrow(() -> new ObjectNotFoundException(String.format("Invalid id %s id not found", ENTITY_NAME)));    	
+        Categoria result = categoria.orElseThrow(() -> new BadRequestAlertException(String.format("Invalid id %s id not found", ENTITY_NAME)));    	
     	return ResponseEntity.ok().body(result);
     }
 

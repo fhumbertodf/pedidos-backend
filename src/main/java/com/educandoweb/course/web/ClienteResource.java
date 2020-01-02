@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.educandoweb.course.domain.Cliente;
 import com.educandoweb.course.repository.ClienteRepository;
 import com.educandoweb.course.web.errors.BadRequestAlertException;
-import com.educandoweb.course.web.errors.ObjectNotFoundException;
 
 /**
  * REST controller for managing {@link com.educandoweb.course.domain.Cliente}.
@@ -99,7 +98,7 @@ public class ClienteResource {
     public ResponseEntity<Cliente> getCliente(@PathVariable Long id) {
         log.debug("REST request to get Cliente : {}", id);
         Optional<Cliente> cliente = clienteRepository.findById(id);
-        Cliente result = cliente.orElseThrow(() -> new ObjectNotFoundException(String.format("Invalid id %s id not found", ENTITY_NAME)));
+        Cliente result = cliente.orElseThrow(() -> new BadRequestAlertException(String.format("Invalid id %s id not found", ENTITY_NAME)));
         return ResponseEntity.ok().body(result);
     }
 

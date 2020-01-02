@@ -17,12 +17,4 @@ public class ResourceExceptionHandler {
 				request.getRequestURI());
 		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(err);
 	}
-	
-	@ExceptionHandler(ObjectNotFoundException.class)
-	public ResponseEntity<StandardError> objectNotFound(ObjectNotFoundException e, HttpServletRequest request) {
-
-		StandardError err = new StandardError(HttpStatus.NOT_FOUND.value(), e.getMessage(),
-				request.getRequestURI());
-		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
-	}
 }

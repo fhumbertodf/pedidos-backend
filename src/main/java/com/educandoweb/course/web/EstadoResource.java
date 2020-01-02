@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.educandoweb.course.domain.Estado;
 import com.educandoweb.course.repository.EstadoRepository;
 import com.educandoweb.course.web.errors.BadRequestAlertException;
-import com.educandoweb.course.web.errors.ObjectNotFoundException;
 
 /**
  * REST controller for managing {@link com.educandoweb.course.domain.Estado}.
@@ -99,7 +98,7 @@ public class EstadoResource {
     public ResponseEntity<Estado> getEstado(@PathVariable Long id) {
         log.debug("REST request to get Estado : {}", id);
         Optional<Estado> estado = estadoRepository.findById(id);
-        Estado result = estado.orElseThrow(() -> new ObjectNotFoundException(String.format("Invalid id %s id not found", ENTITY_NAME)));
+        Estado result = estado.orElseThrow(() -> new BadRequestAlertException(String.format("Invalid id %s id not found", ENTITY_NAME)));
         return ResponseEntity.ok().body(result);
     }
 

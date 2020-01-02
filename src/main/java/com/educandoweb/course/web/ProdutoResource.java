@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.educandoweb.course.domain.Produto;
 import com.educandoweb.course.repository.ProdutoRepository;
 import com.educandoweb.course.web.errors.BadRequestAlertException;
-import com.educandoweb.course.web.errors.ObjectNotFoundException;
 
 /**
  * REST controller for managing {@link com.educandoweb.course.domain.Produto}.
@@ -100,7 +99,7 @@ public class ProdutoResource {
     public ResponseEntity<Produto> getProduto(@PathVariable Long id) {
         log.debug("REST request to get Produto : {}", id);
         Optional<Produto> produto = produtoRepository.findOneWithEagerRelationships(id);
-        Produto result = produto.orElseThrow(() -> new ObjectNotFoundException(String.format("Invalid id %s id not found", ENTITY_NAME)));    	
+        Produto result = produto.orElseThrow(() -> new BadRequestAlertException(String.format("Invalid id %s id not found", ENTITY_NAME)));    	
     	return ResponseEntity.ok().body(result);
     }
 

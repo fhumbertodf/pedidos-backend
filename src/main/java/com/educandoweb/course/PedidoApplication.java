@@ -159,9 +159,7 @@ public class PedidoApplication implements CommandLineRunner {
 		Pedido ped2 = new Pedido();
 		ped2.setInstante(sdf.parse("10/10/2017 19:35"));
 		ped2.setCliente(cli1);
-		ped2.setEnderecoDeEntrega(e2);	
-
-		SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy");
+		ped2.setEnderecoDeEntrega(e2);
 
 		PagamentoComCartao pagto1 = new PagamentoComCartao();
 		pagto1.setEstadoPagamento(EstadoPagamento.QUITADO);
@@ -172,7 +170,7 @@ public class PedidoApplication implements CommandLineRunner {
 
 		PagamentoComBoleto pagto2 = new PagamentoComBoleto();
 		pagto2.setEstadoPagamento(EstadoPagamento.PENDENTE);
-		pagto2.setDataVencimento(sdf2.parse("20/10/2017"));
+		pagto2.setDataVencimento(sdf.parse("20/10/2017 00:00"));
 		pagto2.setDataPagamento(null);
 		pagto2.setPedido(ped2);
 		
