@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.educandoweb.course.domain.Categoria;
 import com.educandoweb.course.repository.CategoriaRepository;
@@ -48,13 +49,16 @@ public class CategoriaResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/categorias")
-    public ResponseEntity<Categoria> createCategoria(@Valid @RequestBody Categoria categoria) throws URISyntaxException {
+    public ResponseEntity<Categoria> createCategoria(@Valid @RequestBody Categoria categoria) {
         log.debug("REST request to save Categoria : {}", categoria);
         if (categoria.getId() != null) {
             throw new BadRequestAlertException(String.format("A new categoria cannot already have an ID %s idexists", ENTITY_NAME));
         }
         Categoria result = categoriaRepository.save(categoria);
-        return ResponseEntity.created(new URI("/api/categorias/" + result.getId())).body(result);
+        
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();
+        
+        return ResponseEntity.created(uri).body(result);
     }
 
     /**

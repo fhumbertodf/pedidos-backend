@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.educandoweb.course.domain.Cliente;
 import com.educandoweb.course.repository.ClienteRepository;
@@ -48,13 +49,16 @@ public class ClienteResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/clientes")
-    public ResponseEntity<Cliente> createCliente(@Valid @RequestBody Cliente cliente) throws URISyntaxException {
+    public ResponseEntity<Cliente> createCliente(@Valid @RequestBody Cliente cliente) {
         log.debug("REST request to save Cliente : {}", cliente);
         if (cliente.getId() != null) {
             throw new BadRequestAlertException(String.format("A new cliente cannot already have an ID %s idexists", ENTITY_NAME));
         }
         Cliente result = clienteRepository.save(cliente);
-        return ResponseEntity.created(new URI("/api/clientes/" + result.getId())).body(result);
+        
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();
+        
+        return ResponseEntity.created(uri).body(result);
     }
 
     /**

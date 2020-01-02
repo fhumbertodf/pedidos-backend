@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.educandoweb.course.domain.Pedido;
 import com.educandoweb.course.repository.PedidoRepository;
@@ -49,13 +50,16 @@ public class PedidoResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/pedidos")
-    public ResponseEntity<Pedido> createPedido(@RequestBody Pedido pedido) throws URISyntaxException {
+    public ResponseEntity<Pedido> createPedido(@RequestBody Pedido pedido) {
         log.debug("REST request to save Pedido : {}", pedido);
         if (pedido.getId() != null) {
             throw new BadRequestAlertException(String.format("A new pedido cannot already have an ID %s idexists", ENTITY_NAME));
         }
         Pedido result = pedidoRepository.save(pedido);
-        return ResponseEntity.created(new URI("/api/pedidos/" + result.getId())).body(result);
+        
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();
+        
+        return ResponseEntity.created(uri).body(result);        
     }
 
     /**

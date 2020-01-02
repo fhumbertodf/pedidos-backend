@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.educandoweb.course.domain.Estado;
 import com.educandoweb.course.repository.EstadoRepository;
@@ -48,13 +49,16 @@ public class EstadoResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/estados")
-    public ResponseEntity<Estado> createEstado(@Valid @RequestBody Estado estado) throws URISyntaxException {
+    public ResponseEntity<Estado> createEstado(@Valid @RequestBody Estado estado) {
         log.debug("REST request to save Estado : {}", estado);
         if (estado.getId() != null) {
             throw new BadRequestAlertException(String.format("A new estado cannot already have an ID %s idexists", ENTITY_NAME));
         }
         Estado result = estadoRepository.save(estado);
-        return ResponseEntity.created(new URI("/api/estados/" + result.getId())).body(result);
+        
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();
+        
+        return ResponseEntity.created(uri).body(result);        
     }
 
     /**
