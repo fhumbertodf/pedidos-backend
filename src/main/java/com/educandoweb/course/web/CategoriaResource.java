@@ -9,6 +9,8 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.educandoweb.course.domain.Categoria;
-import com.educandoweb.course.repository.CategoriaRepository;
+import com.educandoweb.course.service.CategoriaService;
+import com.educandoweb.course.service.dto.CategoriaDTO;
 import com.educandoweb.course.web.errors.BadRequestAlertException;
 
 /**
@@ -35,10 +37,10 @@ public class CategoriaResource {
 
     private static final String ENTITY_NAME = "categoria";
 
-    private final CategoriaRepository categoriaRepository;
+    private final CategoriaService categoriaService;
 
-    public CategoriaResource(CategoriaRepository categoriaRepository) {
-        this.categoriaRepository = categoriaRepository;
+    public CategoriaResource(CategoriaService categoriaService) {
+        this.categoriaService = categoriaService;
     }
 
     /**
@@ -49,12 +51,12 @@ public class CategoriaResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/categorias")
-    public ResponseEntity<Categoria> createCategoria(@Valid @RequestBody Categoria categoria) {
-        log.debug("REST request to save Categoria : {}", categoria);
-        if (categoria.getId() != null) {
+    public ResponseEntity<CategoriaDTO> createCategoria(@Valid @RequestBody CategoriaDTO categoriaDTO) throws URISyntaxException {
+        log.debug("REST request to save Categoria : {}", categoriaDTO);
+        if (categoriaDTO.getId() != null) {
             throw new BadRequestAlertException(String.format("A new categoria cannot already have an ID %s idexists", ENTITY_NAME));
         }
-        Categoria result = categoriaRepository.save(categoria);        
+        CategoriaDTO result = categoriaService.save(categoriaDTO);        
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();        
         return ResponseEntity.created(uri).body(result);
     }
@@ -69,12 +71,12 @@ public class CategoriaResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/categorias")
-    public ResponseEntity<Categoria> updateCategoria(@Valid @RequestBody Categoria categoria) {
-        log.debug("REST request to update Categoria : {}", categoria);
-        if (categoria.getId() == null) {
+    public ResponseEntity<CategoriaDTO> updateCategoria(@Valid @RequestBody CategoriaDTO categoriaDTO) throws URISyntaxException {
+        log.debug("REST request to update Categoria : {}", categoriaDTO);
+        if (categoriaDTO.getId() == null) {
             throw new BadRequestAlertException(String.format("Invalid id %s idnull", ENTITY_NAME));
         }
-        Categoria result = categoriaRepository.save(categoria);
+        CategoriaDTO result = categoriaService.save(categoriaDTO);
         return ResponseEntity.ok().body(result);
     }
 
@@ -85,9 +87,10 @@ public class CategoriaResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of categorias in body.
      */
     @GetMapping("/categorias")
-    public List<Categoria> getAllCategorias() {
-        log.debug("REST request to get all Categorias");
-        return categoriaRepository.findAll();
+    public ResponseEntity<List<CategoriaDTO>> getAllCategorias(Pageable pageable) {
+        log.debug("REST request to get a page of Categorias");
+        Page<CategoriaDTO> page = categoriaService.findAll(pageable);
+        return ResponseEntity.ok().body(page.getContent());
     }
 
     /**
@@ -97,10 +100,10 @@ public class CategoriaResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the categoria, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/categorias/{id}")
-    public ResponseEntity<Categoria> getCategoria(@PathVariable Long id) {
+    public ResponseEntity<CategoriaDTO> getCategoria(@PathVariable Long id) {
         log.debug("REST request to get Categoria : {}", id);
-        Optional<Categoria> categoria = categoriaRepository.findById(id);
-        Categoria result = categoria.orElseThrow(() -> new BadRequestAlertException(String.format("Invalid id %s id not found", ENTITY_NAME)));    	
+        Optional<CategoriaDTO> categoriaDTO = categoriaService.findOne(id);
+        CategoriaDTO result = categoriaDTO.orElseThrow(() -> new BadRequestAlertException(String.format("Invalid id %s id not found", ENTITY_NAME)));    	
     	return ResponseEntity.ok().body(result);
     }
 
@@ -113,7 +116,7 @@ public class CategoriaResource {
     @DeleteMapping("/categorias/{id}")
     public ResponseEntity<Void> deleteCategoria(@PathVariable Long id) {
         log.debug("REST request to delete Categoria : {}", id);
-        categoriaRepository.deleteById(id);
+        categoriaService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
