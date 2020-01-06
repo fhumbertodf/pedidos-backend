@@ -66,10 +66,9 @@ public class CategoriaService {
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<CategoriaDTO> findOne(Long id) {
+    public Optional<Categoria> findOne(Long id) {
         log.debug("Request to get Categoria : {}", id);
-        return categoriaRepository.findById(id)
-            .map(categoriaMapper::toDto);
+        return categoriaRepository.findById(id); //.map(categoriaMapper::toDto);
     }
 
     /**

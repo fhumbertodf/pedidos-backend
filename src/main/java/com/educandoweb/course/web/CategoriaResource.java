@@ -2,7 +2,6 @@ package com.educandoweb.course.web;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.educandoweb.course.domain.Categoria;
 import com.educandoweb.course.service.CategoriaService;
 import com.educandoweb.course.service.dto.CategoriaDTO;
 import com.educandoweb.course.web.errors.BadRequestAlertException;
@@ -87,10 +87,10 @@ public class CategoriaResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of categorias in body.
      */
     @GetMapping("/categorias")
-    public ResponseEntity<List<CategoriaDTO>> getAllCategorias(Pageable pageable) {
+    public ResponseEntity<Page<CategoriaDTO>> getAllCategorias(Pageable pageable) {
         log.debug("REST request to get a page of Categorias");
         Page<CategoriaDTO> page = categoriaService.findAll(pageable);
-        return ResponseEntity.ok().body(page.getContent());
+        return ResponseEntity.ok().body(page);
     }
 
     /**
@@ -100,10 +100,10 @@ public class CategoriaResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the categoria, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/categorias/{id}")
-    public ResponseEntity<CategoriaDTO> getCategoria(@PathVariable Long id) {
+    public ResponseEntity<Categoria> getCategoria(@PathVariable Long id) {
         log.debug("REST request to get Categoria : {}", id);
-        Optional<CategoriaDTO> categoriaDTO = categoriaService.findOne(id);
-        CategoriaDTO result = categoriaDTO.orElseThrow(() -> new BadRequestAlertException(String.format("Invalid id %s id not found", ENTITY_NAME)));    	
+        Optional<Categoria> categoria = categoriaService.findOne(id);
+        Categoria result = categoria.orElseThrow(() -> new BadRequestAlertException(String.format("Invalid id %s id not found", ENTITY_NAME)));    	
     	return ResponseEntity.ok().body(result);
     }
 

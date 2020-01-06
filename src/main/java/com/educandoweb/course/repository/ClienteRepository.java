@@ -11,5 +11,6 @@ import com.educandoweb.course.domain.Cliente;
  */
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
-
+	
+	Cliente findByEmail(String email);
 }

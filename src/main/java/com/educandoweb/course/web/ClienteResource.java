@@ -2,13 +2,14 @@ package com.educandoweb.course.web;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.educandoweb.course.domain.Cliente;
-import com.educandoweb.course.repository.ClienteRepository;
+import com.educandoweb.course.service.ClienteService;
+import com.educandoweb.course.service.dto.ClienteDTO;
+import com.educandoweb.course.service.dto.ClienteNewDTO;
 import com.educandoweb.course.web.errors.BadRequestAlertException;
 
 /**
@@ -35,10 +38,10 @@ public class ClienteResource {
 
     private static final String ENTITY_NAME = "cliente";
 
-    private final ClienteRepository clienteRepository;
+    private final ClienteService clienteService;
 
-    public ClienteResource(ClienteRepository clienteRepository) {
-        this.clienteRepository = clienteRepository;
+    public ClienteResource(ClienteService clienteService) {
+        this.clienteService = clienteService;
     }
 
     /**
@@ -49,12 +52,12 @@ public class ClienteResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/clientes")
-    public ResponseEntity<Cliente> createCliente(@Valid @RequestBody Cliente cliente) {
+    public ResponseEntity<ClienteDTO> createCliente(@Valid @RequestBody ClienteNewDTO cliente) {
         log.debug("REST request to save Cliente : {}", cliente);
-        if (cliente.getId() != null) {
-            throw new BadRequestAlertException(String.format("A new cliente cannot already have an ID %s idexists", ENTITY_NAME));
-        }
-        Cliente result = clienteRepository.save(cliente);        
+        //if (cliente.getId() != null) {
+        //    throw new BadRequestAlertException(String.format("A new cliente cannot already have an ID %s idexists", ENTITY_NAME));
+        //}
+        ClienteDTO result = clienteService.insert(cliente);        
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();        
         return ResponseEntity.created(uri).body(result);
     }
@@ -69,12 +72,12 @@ public class ClienteResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/clientes")
-    public ResponseEntity<Cliente> updateCliente(@Valid @RequestBody Cliente cliente) throws URISyntaxException {
+    public ResponseEntity<ClienteDTO> updateCliente(@Valid @RequestBody ClienteDTO cliente) throws URISyntaxException {
         log.debug("REST request to update Cliente : {}", cliente);
         if (cliente.getId() == null) {
             throw new BadRequestAlertException(String.format("Invalid id %s idnull", ENTITY_NAME));
         }
-        Cliente result = clienteRepository.save(cliente);
+        ClienteDTO result = clienteService.save(cliente);
         return ResponseEntity.ok().body(result);
     }
 
@@ -85,9 +88,10 @@ public class ClienteResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of clientes in body.
      */
     @GetMapping("/clientes")
-    public List<Cliente> getAllClientes() {
+    public ResponseEntity<Page<ClienteDTO>> getAllClientes(Pageable pageable) {
         log.debug("REST request to get all Clientes");
-        return clienteRepository.findAll();
+        Page<ClienteDTO> page = clienteService.findAll(pageable);
+        return ResponseEntity.ok().body(page);
     }
 
     /**
@@ -99,7 +103,7 @@ public class ClienteResource {
     @GetMapping("/clientes/{id}")
     public ResponseEntity<Cliente> getCliente(@PathVariable Long id) {
         log.debug("REST request to get Cliente : {}", id);
-        Optional<Cliente> cliente = clienteRepository.findById(id);
+        Optional<Cliente> cliente = clienteService.findOne(id);
         Cliente result = cliente.orElseThrow(() -> new BadRequestAlertException(String.format("Invalid id %s id not found", ENTITY_NAME)));
         return ResponseEntity.ok().body(result);
     }
@@ -113,7 +117,7 @@ public class ClienteResource {
     @DeleteMapping("/clientes/{id}")
     public ResponseEntity<Void> deleteCliente(@PathVariable Long id) {
         log.debug("REST request to delete Cliente : {}", id);
-        clienteRepository.deleteById(id);
+        clienteService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

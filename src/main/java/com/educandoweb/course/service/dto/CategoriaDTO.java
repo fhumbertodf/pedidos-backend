@@ -16,7 +16,6 @@ public class CategoriaDTO implements Serializable {
     @Size(min = 5, max = 80)
     private String nome;
 
-
     public Long getId() {
         return id;
     }
