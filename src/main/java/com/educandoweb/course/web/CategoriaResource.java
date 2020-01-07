@@ -130,8 +130,7 @@ public class CategoriaResource {
      */
     @DeleteMapping("/categorias/{id}")
     public ResponseEntity<Void> deleteCategoria(@PathVariable Long id) {
-        log.debug("REST request to delete Categoria : {}", id);
-        categoriaService.findOne(id).orElseThrow(() -> new ObjectNotFoundAlertException("Invalid id", ENTITY_NAME, "id not found"));
+        log.debug("REST request to delete Categoria : {}", id);        
         categoriaService.delete(id);
         return ResponseEntity.noContent()
         		.headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))

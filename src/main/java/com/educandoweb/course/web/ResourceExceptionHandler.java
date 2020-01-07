@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -42,6 +43,16 @@ public class ResourceExceptionHandler {
 				.headers(HeaderUtil.createFailureAlert(applicationName, true, e.getEntityName(), e.getErrorKey(), e.getMessage()))
 				.body(err);
 	}
+	
+	@ExceptionHandler(EmptyResultDataAccessException.class)
+	public ResponseEntity<StandardError> objectNotFound(EmptyResultDataAccessException e, HttpServletRequest request) {
+
+		StandardError err = new StandardError(HttpStatus.NOT_FOUND.value(), e.getMessage(),
+				request.getRequestURI());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+				.headers(HeaderUtil.createFailureAlert(applicationName, true, "", "id not found", e.getMessage()))
+				.body(err);
+	}	
 	
 	@ExceptionHandler(ConstraintViolationException.class)
 	public ResponseEntity<StandardError> constraintViolation(ConstraintViolationException e, HttpServletRequest request) {

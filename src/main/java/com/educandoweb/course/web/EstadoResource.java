@@ -1,28 +1,22 @@
 package com.educandoweb.course.web;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
-
-import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.educandoweb.course.domain.Estado;
-import com.educandoweb.course.repository.EstadoRepository;
-import com.educandoweb.course.web.errors.BadRequestAlertException;
+import com.educandoweb.course.service.CidadeService;
+import com.educandoweb.course.service.EstadoService;
+import com.educandoweb.course.service.dto.CidadeDTO;
+import com.educandoweb.course.service.dto.EstadoDTO;
+import com.educandoweb.course.web.util.PaginationUtil;
 
 /**
  * REST controller for managing {@link com.educandoweb.course.domain.Estado}.
@@ -33,61 +27,29 @@ public class EstadoResource {
 
     private final Logger log = LoggerFactory.getLogger(EstadoResource.class);
 
-    private static final String ENTITY_NAME = "estado";
+    //private static final String ENTITY_NAME = "estado";
 
-    private final EstadoRepository estadoRepository;
+    private final EstadoService estadoService;
+    
+    private final CidadeService cidadeService;
 
-    public EstadoResource(EstadoRepository estadoRepository) {
-        this.estadoRepository = estadoRepository;
+    public EstadoResource(EstadoService estadoService, CidadeService cidadeService) {
+        this.estadoService = estadoService;
+        this.cidadeService = cidadeService;
     }
 
-    /**
-     * {@code POST  /estados} : Create a new estado.
-     *
-     * @param estado the estado to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new estado, or with status {@code 400 (Bad Request)} if the estado has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PostMapping("/estados")
-    public ResponseEntity<Estado> createEstado(@Valid @RequestBody Estado estado) {
-        log.debug("REST request to save Estado : {}", estado);
-        if (estado.getId() != null) {
-            throw new BadRequestAlertException("A new estado cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        Estado result = estadoRepository.save(estado);        
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();        
-        return ResponseEntity.created(uri).body(result);        
-    }
-
-    /**
-     * {@code PUT  /estados} : Updates an existing estado.
-     *
-     * @param estado the estado to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated estado,
-     * or with status {@code 400 (Bad Request)} if the estado is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the estado couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PutMapping("/estados")
-    public ResponseEntity<Estado> updateEstado(@Valid @RequestBody Estado estado) throws URISyntaxException {
-        log.debug("REST request to update Estado : {}", estado);
-        if (estado.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        Estado result = estadoRepository.save(estado);
-        return ResponseEntity.ok().body(result);
-    }
-
-    /**
+   /**
      * {@code GET  /estados} : get all the estados.
      *
 
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of estados in body.
      */
     @GetMapping("/estados")
-    public List<Estado> getAllEstados() {
+    public ResponseEntity<Page<EstadoDTO>> getAllEstados(Pageable pageable) {
         log.debug("REST request to get all Estados");
-        return estadoRepository.findAll();
+        Page<EstadoDTO> page = estadoService.findAll(pageable);        
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);        
+        return ResponseEntity.ok().headers(headers).body(page);
     }
 
     /**
@@ -96,24 +58,11 @@ public class EstadoResource {
      * @param id the id of the estado to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the estado, or with status {@code 404 (Not Found)}.
      */
-    @GetMapping("/estados/{id}")
-    public ResponseEntity<Estado> getEstado(@PathVariable Long id) {
-        log.debug("REST request to get Estado : {}", id);
-        Optional<Estado> estado = estadoRepository.findById(id);
-        Estado result = estado.orElseThrow(() -> new BadRequestAlertException("Invalid id", ENTITY_NAME, "id not found"));
-        return ResponseEntity.ok().body(result);
-    }
-
-    /**
-     * {@code DELETE  /estados/:id} : delete the "id" estado.
-     *
-     * @param id the id of the estado to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
-    @DeleteMapping("/estados/{id}")
-    public ResponseEntity<Void> deleteEstado(@PathVariable Long id) {
-        log.debug("REST request to delete Estado : {}", id);
-        estadoRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
+    @GetMapping("/estados/{estadoId}/cidades")
+    public ResponseEntity<Page<CidadeDTO>> getAllCidades(@PathVariable Long estadoId, Pageable pageable) {
+        log.debug("REST request to get all Cidade: {}", estadoId);
+        Page<CidadeDTO> page = cidadeService.findAll(estadoId, pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page);
+    }   
 }
