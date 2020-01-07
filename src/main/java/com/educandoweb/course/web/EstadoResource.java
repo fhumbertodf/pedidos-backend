@@ -52,7 +52,7 @@ public class EstadoResource {
     public ResponseEntity<Estado> createEstado(@Valid @RequestBody Estado estado) {
         log.debug("REST request to save Estado : {}", estado);
         if (estado.getId() != null) {
-            throw new BadRequestAlertException(String.format("A new estado cannot already have an ID %s idexists", ENTITY_NAME));
+            throw new BadRequestAlertException("A new estado cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Estado result = estadoRepository.save(estado);        
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();        
@@ -72,7 +72,7 @@ public class EstadoResource {
     public ResponseEntity<Estado> updateEstado(@Valid @RequestBody Estado estado) throws URISyntaxException {
         log.debug("REST request to update Estado : {}", estado);
         if (estado.getId() == null) {
-            throw new BadRequestAlertException(String.format("Invalid id %s idnull", ENTITY_NAME));
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         Estado result = estadoRepository.save(estado);
         return ResponseEntity.ok().body(result);
@@ -100,7 +100,7 @@ public class EstadoResource {
     public ResponseEntity<Estado> getEstado(@PathVariable Long id) {
         log.debug("REST request to get Estado : {}", id);
         Optional<Estado> estado = estadoRepository.findById(id);
-        Estado result = estado.orElseThrow(() -> new BadRequestAlertException(String.format("Invalid id %s id not found", ENTITY_NAME)));
+        Estado result = estado.orElseThrow(() -> new BadRequestAlertException("Invalid id", ENTITY_NAME, "id not found"));
         return ResponseEntity.ok().body(result);
     }
 

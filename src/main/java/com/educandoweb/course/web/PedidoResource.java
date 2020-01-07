@@ -53,7 +53,7 @@ public class PedidoResource {
     public ResponseEntity<Pedido> createPedido(@RequestBody Pedido pedido) {
         log.debug("REST request to save Pedido : {}", pedido);
         if (pedido.getId() != null) {
-            throw new BadRequestAlertException(String.format("A new pedido cannot already have an ID %s idexists", ENTITY_NAME));
+            throw new BadRequestAlertException("A new pedido cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Pedido result = pedidoRepository.save(pedido);        
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();        
@@ -73,7 +73,7 @@ public class PedidoResource {
     public ResponseEntity<Pedido> updatePedido(@RequestBody Pedido pedido) throws URISyntaxException {
         log.debug("REST request to update Pedido : {}", pedido);
         if (pedido.getId() == null) {
-            throw new BadRequestAlertException(String.format("Invalid id %s idnull", ENTITY_NAME));
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         Pedido result = pedidoRepository.save(pedido);
         return ResponseEntity.ok().body(result);
@@ -109,7 +109,7 @@ public class PedidoResource {
     public ResponseEntity<Pedido> getPedido(@PathVariable Long id) {
         log.debug("REST request to get Pedido : {}", id);
         Optional<Pedido> pedido = pedidoRepository.findById(id);
-        Pedido result = pedido.orElseThrow(() -> new BadRequestAlertException(String.format("Invalid id %s id not found", ENTITY_NAME)));
+        Pedido result = pedido.orElseThrow(() -> new BadRequestAlertException("Invalid id", ENTITY_NAME, "id not found"));
         return ResponseEntity.ok().body(result);
     }
 

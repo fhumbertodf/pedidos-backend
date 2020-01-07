@@ -1,25 +1,25 @@
 package com.educandoweb.course.web.errors;
 
-public class BadRequestAlertException extends RuntimeException {
+public class ConstraintViolationAlertException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	private final String entityName;
 
 	private final String errorKey;
 
-	public BadRequestAlertException(String defaultMessage, String entityName, String errorKey) {
+	public ConstraintViolationAlertException(String defaultMessage, String entityName, String errorKey) {
 		super(defaultMessage);
 		this.entityName = entityName;
 		this.errorKey = errorKey;
 	}
 
-	public BadRequestAlertException(String message, Throwable cause) {
-		super(message, cause);
+	public ConstraintViolationAlertException(String msg, Throwable cause) {
+		super(msg, cause);
 		this.entityName = "";
 		this.errorKey = "";
 	}
-
+	
 	public String getEntityName() {
 		return entityName;
 	}
@@ -27,4 +27,5 @@ public class BadRequestAlertException extends RuntimeException {
 	public String getErrorKey() {
 		return errorKey;
 	}
+
 }

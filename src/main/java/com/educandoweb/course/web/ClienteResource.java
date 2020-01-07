@@ -8,8 +8,10 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +28,8 @@ import com.educandoweb.course.service.ClienteService;
 import com.educandoweb.course.service.dto.ClienteDTO;
 import com.educandoweb.course.service.dto.ClienteNewDTO;
 import com.educandoweb.course.web.errors.BadRequestAlertException;
+import com.educandoweb.course.web.util.HeaderUtil;
+import com.educandoweb.course.web.util.PaginationUtil;
 
 /**
  * REST controller for managing {@link com.educandoweb.course.domain.Cliente}.
@@ -37,6 +41,9 @@ public class ClienteResource {
     private final Logger log = LoggerFactory.getLogger(ClienteResource.class);
 
     private static final String ENTITY_NAME = "cliente";
+    
+    @Value("${jhipster.clientApp.name}")
+    private String applicationName;
 
     private final ClienteService clienteService;
 
@@ -59,7 +66,9 @@ public class ClienteResource {
         //}
         ClienteDTO result = clienteService.insert(cliente);        
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();        
-        return ResponseEntity.created(uri).body(result);
+        return ResponseEntity.created(uri)
+        		.headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+        		.body(result);
     }
 
     /**
@@ -75,10 +84,14 @@ public class ClienteResource {
     public ResponseEntity<ClienteDTO> updateCliente(@Valid @RequestBody ClienteDTO cliente) throws URISyntaxException {
         log.debug("REST request to update Cliente : {}", cliente);
         if (cliente.getId() == null) {
-            throw new BadRequestAlertException(String.format("Invalid id %s idnull", ENTITY_NAME));
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        } else {
+        	clienteService.findOne(cliente.getId()).orElseThrow(() -> new BadRequestAlertException("Invalid id", ENTITY_NAME, "id not found"));
         }
         ClienteDTO result = clienteService.save(cliente);
-        return ResponseEntity.ok().body(result);
+        return ResponseEntity.ok()
+        		.headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, cliente.getId().toString()))
+        		.body(result);
     }
 
     /**
@@ -91,7 +104,8 @@ public class ClienteResource {
     public ResponseEntity<Page<ClienteDTO>> getAllClientes(Pageable pageable) {
         log.debug("REST request to get all Clientes");
         Page<ClienteDTO> page = clienteService.findAll(pageable);
-        return ResponseEntity.ok().body(page);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page);
     }
 
     /**
@@ -104,7 +118,7 @@ public class ClienteResource {
     public ResponseEntity<Cliente> getCliente(@PathVariable Long id) {
         log.debug("REST request to get Cliente : {}", id);
         Optional<Cliente> cliente = clienteService.findOne(id);
-        Cliente result = cliente.orElseThrow(() -> new BadRequestAlertException(String.format("Invalid id %s id not found", ENTITY_NAME)));
+        Cliente result = cliente.orElseThrow(() -> new BadRequestAlertException("Invalid id", ENTITY_NAME, "id not found"));
         return ResponseEntity.ok().body(result);
     }
 
@@ -118,6 +132,8 @@ public class ClienteResource {
     public ResponseEntity<Void> deleteCliente(@PathVariable Long id) {
         log.debug("REST request to delete Cliente : {}", id);
         clienteService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+        		.headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+        		.build();
     }
 }

@@ -1,18 +1,18 @@
 package com.educandoweb.course.service;
 
-import com.educandoweb.course.domain.Categoria;
-import com.educandoweb.course.repository.CategoriaRepository;
-import com.educandoweb.course.service.dto.CategoriaDTO;
-import com.educandoweb.course.service.mapper.CategoriaMapper;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import com.educandoweb.course.domain.Categoria;
+import com.educandoweb.course.repository.CategoriaRepository;
+import com.educandoweb.course.service.dto.CategoriaDTO;
+import com.educandoweb.course.service.mapper.CategoriaMapper;
 
 /**
  * Service Implementation for managing {@link Categoria}.
@@ -78,6 +78,6 @@ public class CategoriaService {
      */
     public void delete(Long id) {
         log.debug("Request to delete Categoria : {}", id);
-        categoriaRepository.deleteById(id);
+        categoriaRepository.deleteById(id);        
     }
 }

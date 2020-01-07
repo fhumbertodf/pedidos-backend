@@ -53,7 +53,7 @@ public class ProdutoResource {
     public ResponseEntity<Produto> createProduto(@Valid @RequestBody Produto produto) {
         log.debug("REST request to save Produto : {}", produto);
         if (produto.getId() != null) {        
-            throw new BadRequestAlertException(String.format("A new produto cannot already have an ID %s idexists", ENTITY_NAME));
+            throw new BadRequestAlertException("A new produto cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Produto result = produtoRepository.save(produto);        
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();        
@@ -73,7 +73,7 @@ public class ProdutoResource {
     public ResponseEntity<Produto> updateProduto(@Valid @RequestBody Produto produto) {
         log.debug("REST request to update Produto : {}", produto);
         if (produto.getId() == null) {
-            throw new BadRequestAlertException(String.format("Invalid id %s idnull", ENTITY_NAME));
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         Produto result = produtoRepository.save(produto);
         return ResponseEntity.ok().body(result);
@@ -101,7 +101,7 @@ public class ProdutoResource {
     public ResponseEntity<Produto> getProduto(@PathVariable Long id) {
         log.debug("REST request to get Produto : {}", id);
         Optional<Produto> produto = produtoRepository.findOneWithEagerRelationships(id);
-        Produto result = produto.orElseThrow(() -> new BadRequestAlertException(String.format("Invalid id %s id not found", ENTITY_NAME)));    	
+        Produto result = produto.orElseThrow(() -> new BadRequestAlertException("Invalid id", ENTITY_NAME, "id not found"));    	
     	return ResponseEntity.ok().body(result);
     }
 
