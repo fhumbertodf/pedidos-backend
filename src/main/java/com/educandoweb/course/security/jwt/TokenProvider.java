@@ -44,13 +44,13 @@ public class TokenProvider implements InitializingBean {
     @Value("${jhipster.security.authentication.jwt.secret}")
     private String jwtSecret;
     
-    @Value("${jhipster.security.authentication.jwt.base64Secret}")
+    @Value("${jhipster.security.authentication.jwt.base64-secret}")
     private String jwtBase64Secret;
     
-    @Value("${jhipster.security.authentication.jwt.tokenValidityInSeconds}")
+    @Value("${jhipster.security.authentication.jwt.token-validity-in-seconds}")
     private Long tokenValidityInSeconds;
     
-    @Value("${jhipster.security.authentication.jwt.tokenValidityInSecondsForRememberMe}")
+    @Value("${jhipster.security.authentication.jwt.token-validity-in-seconds-for-remember-me}")
     private Long tokenValidityInSecondsForRememberMe;
 
     @Override
