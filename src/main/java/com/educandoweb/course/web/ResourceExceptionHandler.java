@@ -57,9 +57,9 @@ public class ResourceExceptionHandler {
 	@ExceptionHandler(ConstraintViolationException.class)
 	public ResponseEntity<StandardError> constraintViolation(ConstraintViolationException e, HttpServletRequest request) {
 
-		StandardError err = new StandardError(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage(),
+		StandardError err = new StandardError(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(),
 				request.getRequestURI());
-		return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 				.headers(HeaderUtil.createFailureAlert(applicationName, true, "", e.getConstraintName(), e.getMessage()))
 				.body(err);
 	}
