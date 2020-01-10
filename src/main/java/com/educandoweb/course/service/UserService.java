@@ -17,12 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.educandoweb.course.config.Constants;
 import com.educandoweb.course.domain.Authority;
 import com.educandoweb.course.domain.User;
 import com.educandoweb.course.repository.AuthorityRepository;
 import com.educandoweb.course.repository.UserRepository;
-import com.educandoweb.course.security.AuthoritiesConstants;
 import com.educandoweb.course.security.SecurityUtils;
 import com.educandoweb.course.service.dto.UserDTO;
 import com.educandoweb.course.util.RandomUtil;
@@ -38,6 +36,11 @@ import com.educandoweb.course.web.errors.LoginAlreadyUsedException;
 public class UserService {
 
     private final Logger log = LoggerFactory.getLogger(UserService.class);
+    
+    public static final String DEFAULT_LANGUAGE = "pt-br";
+    public static final String ANONYMOUS_USER = "anonymoususer";
+    
+    public static final String USER = "ROLE_USER";
 
     private final UserRepository userRepository;
 
@@ -113,7 +116,7 @@ public class UserService {
         // new user gets registration key
         newUser.setActivationKey(RandomUtil.generateActivationKey());
         Set<Authority> authorities = new HashSet<>();
-        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
+        authorityRepository.findById(USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
@@ -137,7 +140,7 @@ public class UserService {
         user.setEmail(userDTO.getEmail().toLowerCase());
         user.setImageUrl(userDTO.getImageUrl());
         if (userDTO.getLangKey() == null) {
-            user.setLangKey(Constants.DEFAULT_LANGUAGE); // default language
+            user.setLangKey(DEFAULT_LANGUAGE); // default language
         } else {
             user.setLangKey(userDTO.getLangKey());
         }
@@ -236,7 +239,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Page<UserDTO> getAllManagedUsers(Pageable pageable) {
-        return userRepository.findAllByLoginNot(pageable, Constants.ANONYMOUS_USER).map(UserDTO::new);
+        return userRepository.findAllByLoginNot(pageable, ANONYMOUS_USER).map(UserDTO::new);
     }
 
     @Transactional(readOnly = true)

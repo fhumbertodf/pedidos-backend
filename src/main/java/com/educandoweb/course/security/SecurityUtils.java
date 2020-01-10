@@ -13,6 +13,8 @@ import java.util.Optional;
  * Utility class for Spring Security.
  */
 public final class SecurityUtils {
+	
+	public static final String ANONYMOUS = "ROLE_ANONYMOUS";
 
     private SecurityUtils() {
     }
@@ -60,7 +62,7 @@ public final class SecurityUtils {
                 List<GrantedAuthority> authorities = new ArrayList<>();
                     authorities.addAll(authentication.getAuthorities());
                 return authorities.stream()
-                    .noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(AuthoritiesConstants.ANONYMOUS));
+                    .noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(ANONYMOUS));
             })
             .orElse(false);
     }
