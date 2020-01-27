@@ -20,6 +20,7 @@ import com.educandoweb.course.domain.PagamentoComBoleto;
 import com.educandoweb.course.domain.PagamentoComCartao;
 import com.educandoweb.course.domain.Pedido;
 import com.educandoweb.course.domain.Produto;
+import com.educandoweb.course.domain.User;
 import com.educandoweb.course.domain.enumeration.EstadoPagamento;
 import com.educandoweb.course.domain.enumeration.TipoCliente;
 import com.educandoweb.course.repository.CategoriaRepository;
@@ -31,6 +32,7 @@ import com.educandoweb.course.repository.ItemPedidoRepository;
 import com.educandoweb.course.repository.PagamentoRepository;
 import com.educandoweb.course.repository.PedidoRepository;
 import com.educandoweb.course.repository.ProdutoRepository;
+import com.educandoweb.course.service.UserService;
 
 @SpringBootApplication
 public class PedidoApplication implements CommandLineRunner {
@@ -61,6 +63,9 @@ public class PedidoApplication implements CommandLineRunner {
 
 	@Autowired
 	ProdutoRepository produtoRepository;
+	
+	@Autowired
+	UserService userService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(PedidoApplication.class, args);
@@ -68,7 +73,7 @@ public class PedidoApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-
+		
 		Categoria cat1 = new Categoria();
 		cat1.setNome("Informática");
 		Categoria cat2 = new Categoria();
@@ -325,8 +330,24 @@ public class PedidoApplication implements CommandLineRunner {
 		cli1.setTipoCliente(TipoCliente.PESSOAFISICA);
 
 		cli1.setTelefones(new HashSet<String>(Arrays.asList("27363323", "93838393")));
+		
+		Cliente cli2 = new Cliente();
+		cli2.setNome("Ana Costa");
+		cli2.setEmail("nelio.iftm@gmail.com");
+		cli2.setCpfOuCnpj("31628382740");
+		cli2.setTipoCliente(TipoCliente.PESSOAFISICA);
+		
+		cli2.setTelefones(new HashSet<String>(Arrays.asList("93883321", "34252625")));
 
-		clienteRepository.saveAll(new HashSet<Cliente>(Arrays.asList(cli1)));
+		clienteRepository.saveAll(new HashSet<Cliente>(Arrays.asList(cli1, cli2)));
+		
+		User user1 = new User();
+		user1.setLogin("maria@gmail.com");
+		user1.setPassword("123");
+		
+		User user2 = new User();
+		user2.setLogin("nelio.iftm@gmail.com");
+		user2.setPassword("123");		
 
 		Endereco e1 = new Endereco();
 		e1.setLogradouro("Rua Flores");
@@ -345,8 +366,16 @@ public class PedidoApplication implements CommandLineRunner {
 		e2.setCep("38777012");
 		e2.setCidade(c2);
 		e2.setCliente(cli1);
+				
+		Endereco e3 = new Endereco();
+		e3.setLogradouro("Avenida Floriano");
+		e3.setNumero("2106");
+		e3.setBairro("Centro");
+		e3.setCep("281777012");
+		e3.setCidade(c2);
+		e3.setCliente(cli2);
 
-		enderecoRepository.saveAll(new HashSet<Endereco>(Arrays.asList(e1, e2)));
+		enderecoRepository.saveAll(new HashSet<Endereco>(Arrays.asList(e1, e2, e3)));
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 

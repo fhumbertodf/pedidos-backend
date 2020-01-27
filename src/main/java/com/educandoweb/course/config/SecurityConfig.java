@@ -10,27 +10,23 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
-import org.springframework.web.filter.CorsFilter;
 
-import com.educandoweb.course.security.jwt.JWTConfigurer;
-import com.educandoweb.course.security.jwt.TokenProvider;
+import com.educandoweb.course.domain.enumeration.Perfil;
+//import com.educandoweb.course.security.jwt.JWTConfigurer;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
-	public static final String ADMIN = "ROLE_ADMIN";
+	//private final TokenProvider tokenProvider;
 
-    private final TokenProvider tokenProvider;
+    //private final CorsFilter corsFilter;    
 
-    private final CorsFilter corsFilter;    
-
-    public SecurityConfig(TokenProvider tokenProvider, CorsFilter corsFilter) {
-        this.tokenProvider = tokenProvider;
-        this.corsFilter = corsFilter;        
-    }
+    //public SecurityConfig(TokenProvider tokenProvider, CorsFilter corsFilter) {
+    //    this.tokenProvider = tokenProvider;
+    //    this.corsFilter = corsFilter;        
+    //}
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -50,9 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         // @formatter:off
         http
-            .csrf()
-            .disable()
-            .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+            .csrf().disable()
+            //.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling()
             //.authenticationEntryPoint(problemSupport)
             //.accessDeniedHandler(problemSupport)
@@ -80,15 +75,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/management/health").permitAll()
             .antMatchers("/management/info").permitAll()
             .antMatchers("/management/prometheus").permitAll()
-            .antMatchers("/management/**").hasAuthority(ADMIN)
+            .antMatchers("/management/**").hasAuthority(Perfil.ADMIN.getDescricao())
         .and()
-            .httpBasic()
-        .and()
-            .apply(securityConfigurerAdapter());
+            .httpBasic();
+        //.and()
+         //   .apply(securityConfigurerAdapter());
         // @formatter:on
     }
 
-    private JWTConfigurer securityConfigurerAdapter() {
-        return new JWTConfigurer(tokenProvider);
-    }
+    //private JWTConfigurer securityConfigurerAdapter() {
+    //    return new JWTConfigurer(tokenProvider);
+    //}
 }

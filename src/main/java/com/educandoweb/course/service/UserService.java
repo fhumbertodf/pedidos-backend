@@ -14,18 +14,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.educandoweb.course.domain.Authority;
 import com.educandoweb.course.domain.User;
+import com.educandoweb.course.domain.enumeration.Perfil;
 import com.educandoweb.course.repository.AuthorityRepository;
 import com.educandoweb.course.repository.UserRepository;
-import com.educandoweb.course.security.SecurityUtils;
 import com.educandoweb.course.service.dto.UserDTO;
 import com.educandoweb.course.util.RandomUtil;
 import com.educandoweb.course.web.errors.EmailAlreadyUsedException;
-import com.educandoweb.course.web.errors.InvalidPasswordException;
 import com.educandoweb.course.web.errors.LoginAlreadyUsedException;
 
 /**
@@ -37,11 +37,8 @@ public class UserService {
 
     private final Logger log = LoggerFactory.getLogger(UserService.class);
     
-    public static final String DEFAULT_LANGUAGE = "pt-br";
-    public static final String ANONYMOUS_USER = "anonymoususer";
+    public static final String DEFAULT_LANGUAGE = "pt-br";    
     
-    public static final String USER = "ROLE_USER";
-
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -106,17 +103,14 @@ public class UserService {
         newUser.setLogin(userDTO.getLogin().toLowerCase());
         // new user gets initially a generated password
         newUser.setPassword(encryptedPassword);
-        newUser.setFirstName(userDTO.getFirstName());
-        newUser.setLastName(userDTO.getLastName());
-        newUser.setEmail(userDTO.getEmail().toLowerCase());
-        newUser.setImageUrl(userDTO.getImageUrl());
+        newUser.setEmail(userDTO.getEmail().toLowerCase());        
         newUser.setLangKey(userDTO.getLangKey());
         // new user is not active
         newUser.setActivated(false);
         // new user gets registration key
         newUser.setActivationKey(RandomUtil.generateActivationKey());
         Set<Authority> authorities = new HashSet<>();
-        authorityRepository.findById(USER).ifPresent(authorities::add);
+        authorityRepository.findById(Perfil.USER.getDescricao()).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
@@ -135,10 +129,7 @@ public class UserService {
     public User createUser(UserDTO userDTO) {
         User user = new User();
         user.setLogin(userDTO.getLogin().toLowerCase());
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setEmail(userDTO.getEmail().toLowerCase());
-        user.setImageUrl(userDTO.getImageUrl());
+        user.setEmail(userDTO.getEmail().toLowerCase());        
         if (userDTO.getLangKey() == null) {
             user.setLangKey(DEFAULT_LANGUAGE); // default language
         } else {
@@ -172,7 +163,7 @@ public class UserService {
      * @param imageUrl  image URL of user.
      */
     public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
-        SecurityUtils.getCurrentUserLogin()
+        /*SecurityUtils.getCurrentUserLogin()
             .flatMap(userRepository::findOneByLogin)
             .ifPresent(user -> {
                 user.setFirstName(firstName);
@@ -181,7 +172,7 @@ public class UserService {
                 user.setLangKey(langKey);
                 user.setImageUrl(imageUrl);
                 log.debug("Changed Information for User: {}", user);
-            });
+            });*/
     }
 
     /**
@@ -197,10 +188,7 @@ public class UserService {
             .map(Optional::get)
             .map(user -> {
                 user.setLogin(userDTO.getLogin().toLowerCase());
-                user.setFirstName(userDTO.getFirstName());
-                user.setLastName(userDTO.getLastName());
-                user.setEmail(userDTO.getEmail().toLowerCase());
-                user.setImageUrl(userDTO.getImageUrl());
+                user.setEmail(userDTO.getEmail().toLowerCase());                
                 user.setActivated(userDTO.isActivated());
                 user.setLangKey(userDTO.getLangKey());
                 Set<Authority> managedAuthorities = user.getAuthorities();
@@ -224,7 +212,7 @@ public class UserService {
     }
 
     public void changePassword(String currentClearTextPassword, String newPassword) {
-        SecurityUtils.getCurrentUserLogin()
+        /*SecurityUtils.getCurrentUserLogin()
             .flatMap(userRepository::findOneByLogin)
             .ifPresent(user -> {
                 String currentEncryptedPassword = user.getPassword();
@@ -234,12 +222,12 @@ public class UserService {
                 String encryptedPassword = passwordEncoder.encode(newPassword);
                 user.setPassword(encryptedPassword);
                 log.debug("Changed password for User: {}", user);
-            });
+            });*/
     }
 
     @Transactional(readOnly = true)
     public Page<UserDTO> getAllManagedUsers(Pageable pageable) {
-        return userRepository.findAllByLoginNot(pageable, ANONYMOUS_USER).map(UserDTO::new);
+        return userRepository.findAllByLoginNot(pageable, Perfil.ANONYMOUS.getDescricao()).map(UserDTO::new);
     }
 
     @Transactional(readOnly = true)
@@ -254,7 +242,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Optional<User> getUserWithAuthorities() {
-        return SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneWithAuthoritiesByLogin);
+        return null; //SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneWithAuthoritiesByLogin);
     }
 
     /**
