@@ -22,6 +22,7 @@ import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
+import org.springframework.data.annotation.CreatedDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -30,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 @Table(name = "jhi_user")
-public class User extends AbstractAuditingEntity implements Serializable {
+public class User implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -99,6 +100,11 @@ public class User extends AbstractAuditingEntity implements Serializable {
         inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")})
     @BatchSize(size = 20)
     private Set<Authority> authorities = new HashSet<>();
+    
+    @CreatedDate
+    @Column(name = "created_date", updatable = false)
+    @JsonIgnore
+    private Instant createdDate = Instant.now();
 
     public Long getId() {
         return id;
@@ -203,6 +209,14 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     public void setAuthorities(Set<Authority> authorities) {
         this.authorities = authorities;
+    }
+    
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
     }
 
     @Override
