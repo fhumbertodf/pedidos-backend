@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.educandoweb.course.domain.Categoria;
 import com.educandoweb.course.domain.Cidade;
@@ -32,7 +33,8 @@ import com.educandoweb.course.repository.ItemPedidoRepository;
 import com.educandoweb.course.repository.PagamentoRepository;
 import com.educandoweb.course.repository.PedidoRepository;
 import com.educandoweb.course.repository.ProdutoRepository;
-import com.educandoweb.course.service.UserService;
+import com.educandoweb.course.repository.UserRepository;
+import com.educandoweb.course.util.RandomUtil;
 
 @SpringBootApplication
 public class PedidoApplication implements CommandLineRunner {
@@ -65,7 +67,10 @@ public class PedidoApplication implements CommandLineRunner {
 	ProdutoRepository produtoRepository;
 	
 	@Autowired
-	UserService userService;
+	UserRepository userRepository;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	public static void main(String[] args) {
 		SpringApplication.run(PedidoApplication.class, args);
@@ -322,32 +327,41 @@ public class PedidoApplication implements CommandLineRunner {
 
 		estadoRepository.saveAll(new HashSet<Estado>(Arrays.asList(est1, est2)));
 		cidadeRepository.saveAll(new HashSet<Cidade>(Arrays.asList(c1, c2, c3)));
-
-		Cliente cli1 = new Cliente();
+		
+		User user1 = new User();
+        user1.setLogin("maria@gmail.com");
+        user1.setPassword(passwordEncoder.encode("123"));
+        user1.setActivated(false);
+        user1.setActivationKey(RandomUtil.generateActivationKey());
+                
+        Cliente cli1 = new Cliente();
 		cli1.setNome("Maria Silva");
 		cli1.setEmail("maria@gmail.com");
 		cli1.setCpfOuCnpj("36378912377");
 		cli1.setTipoCliente(TipoCliente.PESSOAFISICA);
-
+		cli1.setUser(user1);
+		
 		cli1.setTelefones(new HashSet<String>(Arrays.asList("27363323", "93838393")));
+		
+		User user2 = new User();
+        user2.setLogin("nelio.iftm@gmail.com");
+        user2.setPassword(passwordEncoder.encode("123"));
+        user2.setActivated(false);
+        user2.setActivationKey(RandomUtil.generateActivationKey());
 		
 		Cliente cli2 = new Cliente();
 		cli2.setNome("Ana Costa");
 		cli2.setEmail("nelio.iftm@gmail.com");
 		cli2.setCpfOuCnpj("31628382740");
-		cli2.setTipoCliente(TipoCliente.PESSOAFISICA);
+		cli2.setTipoCliente(TipoCliente.PESSOAFISICA);	
+		cli2.setUser(user2);		
 		
-		cli2.setTelefones(new HashSet<String>(Arrays.asList("93883321", "34252625")));
-
-		clienteRepository.saveAll(new HashSet<Cliente>(Arrays.asList(cli1, cli2)));
+		cli2.setTelefones(new HashSet<String>(Arrays.asList("93883321", "34252625")));	
 		
-		User user1 = new User();
-		user1.setLogin("maria@gmail.com");
-		user1.setPassword("123");
-		
-		User user2 = new User();
-		user2.setLogin("nelio.iftm@gmail.com");
-		user2.setPassword("123");		
+		user1.setCliente(cli1);
+		user2.setCliente(cli2);
+        
+		clienteRepository.saveAll(new HashSet<Cliente>(Arrays.asList(cli1, cli2)));        
 
 		Endereco e1 = new Endereco();
 		e1.setLogradouro("Rua Flores");

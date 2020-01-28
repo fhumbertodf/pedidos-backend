@@ -8,9 +8,9 @@ import javax.validation.ConstraintValidatorContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.educandoweb.course.domain.Cliente;
 import com.educandoweb.course.domain.enumeration.TipoCliente;
 import com.educandoweb.course.repository.ClienteRepository;
+import com.educandoweb.course.repository.UserRepository;
 import com.educandoweb.course.service.dto.ClienteNewDTO;
 import com.educandoweb.course.util.BR;
 import com.educandoweb.course.web.errors.FieldMessage;
@@ -19,6 +19,9 @@ public class ClienteInsertValidator implements ConstraintValidator<ClienteInsert
 
 	@Autowired
 	private ClienteRepository clienteRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	@Override
 	public void initialize(ClienteInsert ann) {
@@ -37,8 +40,11 @@ public class ClienteInsertValidator implements ConstraintValidator<ClienteInsert
 			list.add(new FieldMessage("cpfOuCnpj", "CNPJ inválido"));
 		}
 
-		Cliente aux = clienteRepository.findByEmail(dto.getEmail());
-		if (aux != null) {
+		if (userRepository.findOneByLogin(dto.getLogin().toLowerCase()).isPresent()) {
+			list.add(new FieldMessage("login", "Login já existente"));
+		} 
+		
+		if (clienteRepository.findOneByEmailIgnoreCase(dto.getEmail()).isPresent()) {
 			list.add(new FieldMessage("email", "Email já existente"));
 		}
 		

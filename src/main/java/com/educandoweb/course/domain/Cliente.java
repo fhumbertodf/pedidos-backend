@@ -9,11 +9,14 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Size;
 
 import com.educandoweb.course.domain.enumeration.TipoCliente;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,14 +31,14 @@ public class Cliente implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "nome")
     private String nome;
-
-    
-    @Column(name = "email", unique = true)
+	
+	@Email
+    @Size(min = 5, max = 254)
+    @Column(name = "email", length = 254, unique = true)
     private String email;
 
     @Column(name = "cpf_ou_cnpj")
@@ -54,7 +57,13 @@ public class Cliente implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "cliente")
     private Set<Pedido> pedidos = new HashSet<>();
-
+    
+    @JsonIgnore
+	@OneToOne
+	@JoinColumn(name="user_id")
+	@MapsId  
+    private User user;
+    
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
@@ -173,9 +182,18 @@ public class Cliente implements Serializable {
     public void setPedidos(Set<Pedido> pedidos) {
         this.pedidos = pedidos;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
+    
+    public User getUser() {
+		return user;
+	}
 
-    @Override
+	public void setUser(User user) {
+		this.user = user;
+	}
+    
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove    
+
+	@Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
