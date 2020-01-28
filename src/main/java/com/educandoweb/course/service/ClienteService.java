@@ -100,4 +100,9 @@ public class ClienteService {
 		log.debug("Request to delete Cliente : {}", id);
 		clienteRepository.deleteById(id);
 	}
+	
+	@Transactional(readOnly = true)
+    public Optional<ClienteDTO> getClienteWithAuthoritiesByLogin(String login) {
+        return clienteRepository.findOneWithAuthoritiesByLogin(login).map(clienteMapper::toDto);
+    }
 }

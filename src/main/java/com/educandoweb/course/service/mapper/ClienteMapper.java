@@ -24,7 +24,7 @@ public class ClienteMapper implements EntityMapper<ClienteDTO, Cliente> {
 
 	@Override
 	public ClienteDTO toDto(Cliente entity) {
-		ClienteDTO cliente = new ClienteDTO();
+		ClienteDTO cliente = new ClienteDTO(entity.getUser());
 		cliente.setId(entity.getId());
 		cliente.setNome(entity.getNome());
 		cliente.setEmail(entity.getEmail());

@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.educandoweb.course.domain.Cliente;
 import com.educandoweb.course.domain.User;
 import com.educandoweb.course.repository.ClienteRepository;
 import com.educandoweb.course.repository.UserRepository;
@@ -142,11 +141,11 @@ public class ClienteResource {
 	 *         the cliente, or with status {@code 404 (Not Found)}.
 	 */
 	@GetMapping("/clientes/{id}")
-	public ResponseEntity<Cliente> getCliente(@PathVariable Long id) {
-		log.debug("REST request to get Cliente : {}", id);
-		Optional<Cliente> cliente = clienteService.findOne(id);
-		Cliente result = cliente
-				.orElseThrow(() -> new BadRequestAlertException("Invalid id", ENTITY_NAME, "id not found"));
+	public ResponseEntity<ClienteDTO> getCliente(@PathVariable String login) {
+		log.debug("REST request to get Cliente : {}", login);
+		Optional<ClienteDTO> cliente = clienteService.getClienteWithAuthoritiesByLogin(login);
+		ClienteDTO result = cliente
+				.orElseThrow(() -> new BadRequestAlertException("Invalid login", ENTITY_NAME, "login not found"));
 		return ResponseEntity.ok().body(result);
 	}
 
@@ -157,11 +156,11 @@ public class ClienteResource {
 	 * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
 	 */
 	@DeleteMapping("/clientes/{id}")
-	public ResponseEntity<Void> deleteCliente(@PathVariable Long id) {
-		log.debug("REST request to delete Cliente : {}", id);
-		clienteService.delete(id);
+	public ResponseEntity<Void> deleteCliente(@PathVariable String login) {
+		log.debug("REST request to delete Cliente : {}", login);
+		userService.deleteUser(login);
 		return ResponseEntity.noContent()
-				.headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+				.headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, login))
 				.build();
 	}
 }
