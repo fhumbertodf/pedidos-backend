@@ -224,10 +224,10 @@ public class UserService {
         return userRepository.findAllByLoginNot(pageable, Perfil.ANONYMOUS.getDescricao()).map(UserDTO::new);
     }
 
-    //@Transactional(readOnly = true)
-    //public Optional<User> getUserWithAuthoritiesByLogin(String login) {
-    //    return userRepository.findOneWithAuthoritiesByLogin(login);
-    //}
+    @Transactional(readOnly = true)
+    public Optional<User> getUserWithAuthoritiesByLogin(String login) {
+        return userRepository.findOneWithAuthoritiesByLogin(login);
+    }
 
     @Transactional(readOnly = true)
     public Optional<User> getUserWithAuthorities(Long id) {

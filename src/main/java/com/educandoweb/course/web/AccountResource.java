@@ -42,7 +42,10 @@ import com.educandoweb.course.web.vm.ManagedUserVM;
 public class AccountResource {
 
     private static class AccountResourceException extends RuntimeException {
-        private AccountResourceException(String message) {
+        
+		private static final long serialVersionUID = 1L;
+
+		private AccountResourceException(String message) {
             super(message);
         }
     }

@@ -103,6 +103,6 @@ public class ClienteService {
 	
 	@Transactional(readOnly = true)
     public Optional<ClienteDTO> getClienteWithAuthoritiesByLogin(String login) {
-        return clienteRepository.findOneWithAuthoritiesByLogin(login).map(clienteMapper::toDto);
+        return clienteRepository.findOneByEmailIgnoreCase(login).map(clienteMapper::toDto);
     }
 }

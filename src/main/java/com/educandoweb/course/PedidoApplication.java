@@ -347,7 +347,7 @@ public class PedidoApplication implements CommandLineRunner {
 		
 		User user1 = new User();
         user1.setLogin("maria@gmail.com");
-        user1.setPassword(passwordEncoder.encode("123"));
+        user1.setPassword(passwordEncoder.encode("1q2w3e4r"));
         user1.setActivated(false);
         user1.setActivationKey(RandomUtil.generateActivationKey());
         user1.setAuthorities(new HashSet<Authority>(Arrays.asList(aut3)));
@@ -363,7 +363,7 @@ public class PedidoApplication implements CommandLineRunner {
 		
 		User user2 = new User();
         user2.setLogin("nelio.iftm@gmail.com");
-        user2.setPassword(passwordEncoder.encode("123"));
+        user2.setPassword(passwordEncoder.encode("1q2w3e4r"));
         user2.setActivated(false);
         user2.setActivationKey(RandomUtil.generateActivationKey());
         user2.setAuthorities(new HashSet<Authority>(Arrays.asList(aut3)));
