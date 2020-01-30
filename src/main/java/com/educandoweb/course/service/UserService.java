@@ -23,9 +23,11 @@ import com.educandoweb.course.domain.User;
 import com.educandoweb.course.domain.enumeration.Perfil;
 import com.educandoweb.course.repository.AuthorityRepository;
 import com.educandoweb.course.repository.UserRepository;
+import com.educandoweb.course.security.SecurityUtils;
+import com.educandoweb.course.service.dto.ClienteDTO;
+import com.educandoweb.course.service.dto.ClienteNewDTO;
 import com.educandoweb.course.service.dto.UserDTO;
 import com.educandoweb.course.util.RandomUtil;
-import com.educandoweb.course.web.errors.EmailAlreadyUsedException;
 import com.educandoweb.course.web.errors.LoginAlreadyUsedException;
 
 /**
@@ -76,13 +78,13 @@ public class UserService {
     }
 
     public Optional<User> requestPasswordReset(String mail) {
-        return userRepository.findOneByEmailIgnoreCase(mail)
+        return null; /* userRepository.findOneByEmailIgnoreCase(mail)
             .filter(User::getActivated)
             .map(user -> {
                 user.setResetKey(RandomUtil.generateResetKey());
                 user.setResetDate(Instant.now());
                 return user;
-            });
+            });*/
     }
 
     public User registerUser(UserDTO userDTO, String password) {
@@ -92,18 +94,18 @@ public class UserService {
                 throw new LoginAlreadyUsedException();
             }
         });
-        userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()).ifPresent(existingUser -> {
+        /*userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()).ifPresent(existingUser -> {
             boolean removed = removeNonActivatedUser(existingUser);
             if (!removed) {
                 throw new EmailAlreadyUsedException();
             }
-        });
+        });*/
         User newUser = new User();
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setLogin(userDTO.getLogin().toLowerCase());
         // new user gets initially a generated password
         newUser.setPassword(encryptedPassword);
-        newUser.setEmail(userDTO.getEmail().toLowerCase());        
+        //newUser.setEmail(userDTO.getEmail().toLowerCase());        
         newUser.setLangKey(userDTO.getLangKey());
         // new user is not active
         newUser.setActivated(false);
@@ -126,17 +128,15 @@ public class UserService {
         return true;
     }
 
-    public User createUser(UserDTO userDTO) {
+    public User createUser(ClienteNewDTO userDTO) {
         User user = new User();
-        user.setLogin(userDTO.getLogin().toLowerCase());
-        user.setEmail(userDTO.getEmail().toLowerCase());        
+        user.setLogin(userDTO.getLogin().toLowerCase());                
         if (userDTO.getLangKey() == null) {
             user.setLangKey(DEFAULT_LANGUAGE); // default language
         } else {
             user.setLangKey(userDTO.getLangKey());
-        }
-        String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
-        user.setPassword(encryptedPassword);
+        }        
+        user.setPassword(passwordEncoder.encode(RandomUtil.generatePassword()));
         user.setResetKey(RandomUtil.generateResetKey());
         user.setResetDate(Instant.now());
         user.setActivated(true);
@@ -148,7 +148,7 @@ public class UserService {
                 .collect(Collectors.toSet());
             user.setAuthorities(authorities);
         }
-        userRepository.save(user);
+        //userRepository.save(user);
         log.debug("Created Information for User: {}", user);
         return user;
     }
@@ -162,17 +162,13 @@ public class UserService {
      * @param langKey   language key.
      * @param imageUrl  image URL of user.
      */
-    public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
-        /*SecurityUtils.getCurrentUserLogin()
+    public void updateUser(String langKey) {
+        SecurityUtils.getCurrentUserLogin()
             .flatMap(userRepository::findOneByLogin)
             .ifPresent(user -> {
-                user.setFirstName(firstName);
-                user.setLastName(lastName);
-                user.setEmail(email.toLowerCase());
-                user.setLangKey(langKey);
-                user.setImageUrl(imageUrl);
+                user.setLangKey(langKey);                
                 log.debug("Changed Information for User: {}", user);
-            });*/
+            });
     }
 
     /**
@@ -181,14 +177,13 @@ public class UserService {
      * @param userDTO user to update.
      * @return updated user.
      */
-    public Optional<UserDTO> updateUser(UserDTO userDTO) {
-        return Optional.of(userRepository
-            .findById(userDTO.getId()))
+    public Optional<User> updateUser(ClienteDTO userDTO) {
+        return Optional.of(
+				userRepository.findById(userDTO.getId()))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .map(user -> {
-                user.setLogin(userDTO.getLogin().toLowerCase());
-                user.setEmail(userDTO.getEmail().toLowerCase());                
+                user.setLogin(userDTO.getLogin().toLowerCase());                                
                 user.setActivated(userDTO.isActivated());
                 user.setLangKey(userDTO.getLangKey());
                 Set<Authority> managedAuthorities = user.getAuthorities();
@@ -200,8 +195,7 @@ public class UserService {
                     .forEach(managedAuthorities::add);
                 log.debug("Changed Information for User: {}", user);
                 return user;
-            })
-            .map(UserDTO::new);
+            });            
     }
 
     public void deleteUser(String login) {
@@ -230,10 +224,10 @@ public class UserService {
         return userRepository.findAllByLoginNot(pageable, Perfil.ANONYMOUS.getDescricao()).map(UserDTO::new);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<User> getUserWithAuthoritiesByLogin(String login) {
-        return userRepository.findOneWithAuthoritiesByLogin(login);
-    }
+    //@Transactional(readOnly = true)
+    //public Optional<User> getUserWithAuthoritiesByLogin(String login) {
+    //    return userRepository.findOneWithAuthoritiesByLogin(login);
+    //}
 
     @Transactional(readOnly = true)
     public Optional<User> getUserWithAuthorities(Long id) {

@@ -2,6 +2,7 @@ package com.educandoweb.course.web;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -163,4 +164,14 @@ public class ClienteResource {
 				.headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, login))
 				.build();
 	}
+	
+	/**
+     * Gets a list of all roles.
+     * @return a string list of all roles.
+     */
+    @GetMapping("/clientes/authorities")
+    //@PreAuthorize("hasRole(\"" + ADMIN + "\")")
+    public List<String> getAuthorities() {
+        return userService.getAuthorities();
+    } 
 }

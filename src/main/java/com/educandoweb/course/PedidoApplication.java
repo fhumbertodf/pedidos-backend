@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.educandoweb.course.domain.Authority;
 import com.educandoweb.course.domain.Categoria;
 import com.educandoweb.course.domain.Cidade;
 import com.educandoweb.course.domain.Cliente;
@@ -23,7 +24,9 @@ import com.educandoweb.course.domain.Pedido;
 import com.educandoweb.course.domain.Produto;
 import com.educandoweb.course.domain.User;
 import com.educandoweb.course.domain.enumeration.EstadoPagamento;
+import com.educandoweb.course.domain.enumeration.Perfil;
 import com.educandoweb.course.domain.enumeration.TipoCliente;
+import com.educandoweb.course.repository.AuthorityRepository;
 import com.educandoweb.course.repository.CategoriaRepository;
 import com.educandoweb.course.repository.CidadeRepository;
 import com.educandoweb.course.repository.ClienteRepository;
@@ -38,6 +41,9 @@ import com.educandoweb.course.util.RandomUtil;
 
 @SpringBootApplication
 public class PedidoApplication implements CommandLineRunner {
+	
+	@Autowired
+	AuthorityRepository authorityRepository;
 
 	@Autowired
 	CategoriaRepository categoriaRepository;
@@ -59,6 +65,9 @@ public class PedidoApplication implements CommandLineRunner {
 
 	@Autowired
 	PagamentoRepository pagamentoRepository;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	@Autowired
 	PedidoRepository pedidoRepository;
@@ -67,10 +76,7 @@ public class PedidoApplication implements CommandLineRunner {
 	ProdutoRepository produtoRepository;
 	
 	@Autowired
-	UserRepository userRepository;
-	
-	@Autowired
-	PasswordEncoder passwordEncoder;
+	UserRepository userRepository;	
 
 	public static void main(String[] args) {
 		SpringApplication.run(PedidoApplication.class, args);
@@ -78,6 +84,17 @@ public class PedidoApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		
+		Authority aut1 = new Authority();
+		aut1.setName(Perfil.ADMIN.getDescricao());
+		
+		Authority aut2 = new Authority();
+		aut2.setName(Perfil.ANONYMOUS.getDescricao());
+		
+		Authority aut3 = new Authority();
+		aut3.setName(Perfil.USER.getDescricao());
+		
+		authorityRepository.saveAll(Arrays.asList(aut1,aut2,aut3));
 		
 		Categoria cat1 = new Categoria();
 		cat1.setNome("Informática");
@@ -333,6 +350,7 @@ public class PedidoApplication implements CommandLineRunner {
         user1.setPassword(passwordEncoder.encode("123"));
         user1.setActivated(false);
         user1.setActivationKey(RandomUtil.generateActivationKey());
+        user1.setAuthorities(new HashSet<Authority>(Arrays.asList(aut3)));
                 
         Cliente cli1 = new Cliente();
 		cli1.setNome("Maria Silva");
@@ -348,6 +366,7 @@ public class PedidoApplication implements CommandLineRunner {
         user2.setPassword(passwordEncoder.encode("123"));
         user2.setActivated(false);
         user2.setActivationKey(RandomUtil.generateActivationKey());
+        user2.setAuthorities(new HashSet<Authority>(Arrays.asList(aut3)));
 		
 		Cliente cli2 = new Cliente();
 		cli2.setNome("Ana Costa");
