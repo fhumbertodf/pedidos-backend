@@ -1,8 +1,6 @@
 package com.educandoweb.course.service.dto;
 
 import java.io.Serializable;
-import java.time.Instant;
-import java.util.Set;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -19,9 +17,13 @@ public class ClienteNewDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	// User
+	// Usuario
 
 	public static final String LOGIN_REGEX = "^[_.@A-Za-z0-9-]*$";
+	
+	public static final int PASSWORD_MIN_LENGTH = 4;
+
+    public static final int PASSWORD_MAX_LENGTH = 100;
 
 	private Long id;
 
@@ -30,14 +32,11 @@ public class ClienteNewDTO implements Serializable {
 	@Size(min = 1, max = 50)
 	private String login;
 
-	private boolean activated = false;
-
 	@Size(min = 2, max = 10)
 	private String langKey;
 
-	private Instant createdDate;
-
-	private Set<String> authorities;
+	@Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
+    private String password;	
 
 	// Cliente
 
@@ -45,6 +44,7 @@ public class ClienteNewDTO implements Serializable {
 	@Length(min = 5, max = 120)
 	private String nome;
 
+	@NotEmpty
 	@Email
 	@Size(min = 5, max = 254)
 	private String email;
@@ -77,7 +77,39 @@ public class ClienteNewDTO implements Serializable {
 	private Long cidadeId;
 	
 	public ClienteNewDTO() {
-	}	
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getLogin() {
+		return login;
+	}
+
+	public void setLogin(String login) {
+		this.login = login;
+	}
+
+	public String getLangKey() {
+		return langKey;
+	}
+
+	public void setLangKey(String langKey) {
+		this.langKey = langKey;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
 	public String getNome() {
 		return nome;
@@ -107,7 +139,7 @@ public class ClienteNewDTO implements Serializable {
 		return tipoCliente;
 	}
 
-	public void setTipo(Integer tipoCliente) {
+	public void setTipoCliente(Integer tipoCliente) {
 		this.tipoCliente = tipoCliente;
 	}
 
@@ -181,57 +213,5 @@ public class ClienteNewDTO implements Serializable {
 
 	public void setCidadeId(Long cidadeId) {
 		this.cidadeId = cidadeId;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getLogin() {
-		return login;
-	}
-
-	public void setLogin(String login) {
-		this.login = login;
-	}
-
-	public boolean isActivated() {
-		return activated;
-	}
-
-	public void setActivated(boolean activated) {
-		this.activated = activated;
-	}
-
-	public String getLangKey() {
-		return langKey;
-	}
-
-	public void setLangKey(String langKey) {
-		this.langKey = langKey;
-	}
-
-	public Instant getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Instant createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public Set<String> getAuthorities() {
-		return authorities;
-	}
-
-	public void setAuthorities(Set<String> authorities) {
-		this.authorities = authorities;
-	}
-
-	public void setTipoCliente(Integer tipoCliente) {
-		this.tipoCliente = tipoCliente;
-	}
+	}	
 }

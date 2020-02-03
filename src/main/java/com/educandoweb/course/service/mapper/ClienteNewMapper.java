@@ -36,7 +36,7 @@ public class ClienteNewMapper implements EntityMapper<ClienteNewDTO, Cliente> {
 		endereco.setBairro(dto.getBairro());
 		endereco.setCep(dto.getCep());
 		endereco.setCidade(cidade);
-		//endereco.setCliente(cliente);
+		endereco.setCliente(cliente);
 				
 		cliente.getEnderecos().add(endereco);
 		

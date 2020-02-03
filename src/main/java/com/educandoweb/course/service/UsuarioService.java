@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,20 +23,20 @@ import com.educandoweb.course.domain.enumeration.Perfil;
 import com.educandoweb.course.repository.AutorizacaoRepository;
 import com.educandoweb.course.repository.UsuarioRepository;
 import com.educandoweb.course.security.SecurityUtils;
-import com.educandoweb.course.service.dto.ClienteDTO;
 import com.educandoweb.course.service.dto.ClienteNewDTO;
 import com.educandoweb.course.service.dto.UserDTO;
 import com.educandoweb.course.util.RandomUtil;
-import com.educandoweb.course.web.errors.LoginAlreadyUsedException;
+import com.educandoweb.course.web.errors.AccountResourceException;
+import com.educandoweb.course.web.errors.InvalidPasswordException;
 
 /**
  * Service class for managing users.
  */
 @Service
 @Transactional
-public class UserService {
+public class UsuarioService {
 
-    private final Logger log = LoggerFactory.getLogger(UserService.class);
+    private final Logger log = LoggerFactory.getLogger(UsuarioService.class);
     
     public static final String DEFAULT_LANGUAGE = "pt-br";    
     
@@ -46,8 +45,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final AutorizacaoRepository authorityRepository;
-
-    public UserService(UsuarioRepository userRepository, PasswordEncoder passwordEncoder, AutorizacaoRepository authorityRepository) {
+    
+    public UsuarioService(UsuarioRepository userRepository, PasswordEncoder passwordEncoder, AutorizacaoRepository authorityRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
@@ -78,30 +77,18 @@ public class UserService {
     }
 
     public Optional<Usuario> requestPasswordReset(String mail) {
-        return null; /* userRepository.findOneByEmailIgnoreCase(mail)
-            .filter(User::getActivated)
+        return userRepository.findOneByLoginIgnoreCase(mail)
+            .filter(Usuario::getActivated)
             .map(user -> {
                 user.setResetKey(RandomUtil.generateResetKey());
                 user.setResetDate(Instant.now());
                 return user;
-            });*/
+            });
     }
 
-    public Usuario registerUser(UserDTO userDTO, String password) {
-        userRepository.findOneByLogin(userDTO.getLogin().toLowerCase()).ifPresent(existingUser -> {
-            boolean removed = removeNonActivatedUser(existingUser);
-            if (!removed) {
-                throw new LoginAlreadyUsedException();
-            }
-        });
-        /*userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()).ifPresent(existingUser -> {
-            boolean removed = removeNonActivatedUser(existingUser);
-            if (!removed) {
-                throw new EmailAlreadyUsedException();
-            }
-        });*/
+    public Usuario registerUser(ClienteNewDTO userDTO) {    	
         Usuario newUser = new Usuario();
-        String encryptedPassword = passwordEncoder.encode(password);
+        String encryptedPassword = passwordEncoder.encode(userDTO.getPassword());
         newUser.setLogin(userDTO.getLogin().toLowerCase());
         // new user gets initially a generated password
         newUser.setPassword(encryptedPassword);
@@ -114,21 +101,12 @@ public class UserService {
         Set<Autorizacao> authorities = new HashSet<>();
         authorityRepository.findById(Perfil.USER.getDescricao()).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
-        userRepository.save(newUser);
+        //userRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
         return newUser;
-    }
+    }    
 
-    private boolean removeNonActivatedUser(Usuario existingUser){
-        if (existingUser.getActivated()) {
-             return false;
-        }
-        userRepository.delete(existingUser);
-        userRepository.flush();
-        return true;
-    }
-
-    public Usuario createUser(ClienteNewDTO userDTO) {
+    public Usuario createUser(UserDTO userDTO) {
         Usuario user = new Usuario();
         user.setLogin(userDTO.getLogin().toLowerCase());                
         if (userDTO.getLangKey() == null) {
@@ -148,7 +126,7 @@ public class UserService {
                 .collect(Collectors.toSet());
             user.setAuthorities(authorities);
         }
-        //userRepository.save(user);
+        userRepository.save(user);
         log.debug("Created Information for User: {}", user);
         return user;
     }
@@ -162,13 +140,9 @@ public class UserService {
      * @param langKey   language key.
      * @param imageUrl  image URL of user.
      */
-    public void updateUser(String langKey) {
-        SecurityUtils.getCurrentUserLogin()
-            .flatMap(userRepository::findOneByLogin)
-            .ifPresent(user -> {
-                user.setLangKey(langKey);                
-                log.debug("Changed Information for User: {}", user);
-            });
+    public Usuario updateUser() {    	
+    	return userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()
+    			.orElseThrow(() -> new AccountResourceException("Current user login not found"))).get();          
     }
 
     /**
@@ -177,7 +151,7 @@ public class UserService {
      * @param userDTO user to update.
      * @return updated user.
      */
-    public Optional<Usuario> updateUser(ClienteDTO userDTO) {
+    public Optional<Usuario> updateUser(UserDTO userDTO) {
         return Optional.of(
 				userRepository.findById(userDTO.getId()))
             .filter(Optional::isPresent)
@@ -206,7 +180,7 @@ public class UserService {
     }
 
     public void changePassword(String currentClearTextPassword, String newPassword) {
-        /*SecurityUtils.getCurrentUserLogin()
+        SecurityUtils.getCurrentUserLogin()
             .flatMap(userRepository::findOneByLogin)
             .ifPresent(user -> {
                 String currentEncryptedPassword = user.getPassword();
@@ -216,7 +190,7 @@ public class UserService {
                 String encryptedPassword = passwordEncoder.encode(newPassword);
                 user.setPassword(encryptedPassword);
                 log.debug("Changed password for User: {}", user);
-            });*/
+            });
     }
 
     @Transactional(readOnly = true)
@@ -236,7 +210,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Optional<Usuario> getUserWithAuthorities() {
-        return null; //SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneWithAuthoritiesByLogin);
+        return SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneWithAuthoritiesByLogin);
     }
 
     /**

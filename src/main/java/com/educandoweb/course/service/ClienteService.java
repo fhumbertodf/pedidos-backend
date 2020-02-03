@@ -63,8 +63,8 @@ public class ClienteService {
 		log.debug("Request to save Cliente : {}", clienteDTO);
 		Cliente cliente = clienteMapper.toEntity(clienteDTO);
 		cliente.setUser(user);
-		cliente = clienteRepository.save(cliente);
-		return clienteMapper.toDto(cliente);
+		user.setCliente(cliente);
+		return clienteMapper.toDto(clienteRepository.save(cliente));
 	}
 
 	/**
@@ -86,9 +86,15 @@ public class ClienteService {
 	 * @return the entity.
 	 */
 	@Transactional(readOnly = true)
-	public Optional<Cliente> findOne(Long id) {
+	public Optional<ClienteDTO> findOne(Long id) {
 		log.debug("Request to get Cliente : {}", id);
-		return clienteRepository.findById(id); // .map(clienteMapper::toDto);
+		return clienteRepository.findById(id).map(clienteMapper::toDto);
+	}
+	
+	@Transactional(readOnly = true)
+	public Optional<ClienteDTO> findOne(String email) {
+		log.debug("Request to get Cliente : {}", email);
+		return clienteRepository.findOneByEmailIgnoreCase(email).map(clienteMapper::toDto);
 	}
 
 	/**
@@ -100,9 +106,4 @@ public class ClienteService {
 		log.debug("Request to delete Cliente : {}", id);
 		clienteRepository.deleteById(id);
 	}
-	
-	@Transactional(readOnly = true)
-    public Optional<ClienteDTO> getClienteWithAuthoritiesByLogin(String login) {
-        return clienteRepository.findOneByEmailIgnoreCase(login).map(clienteMapper::toDto);
-    }
 }

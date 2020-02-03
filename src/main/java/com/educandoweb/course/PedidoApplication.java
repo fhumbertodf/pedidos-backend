@@ -348,7 +348,7 @@ public class PedidoApplication implements CommandLineRunner {
 		Usuario user1 = new Usuario();
         user1.setLogin("maria@gmail.com");
         user1.setPassword(passwordEncoder.encode("1q2w3e4r"));
-        user1.setActivated(true);
+        user1.setActivated(false);
         user1.setActivationKey(RandomUtil.generateActivationKey());
         user1.setAuthorities(new HashSet<Autorizacao>(Arrays.asList(aut3)));
                 
@@ -364,7 +364,7 @@ public class PedidoApplication implements CommandLineRunner {
 		Usuario user2 = new Usuario();
         user2.setLogin("nelio.iftm@gmail.com");
         user2.setPassword(passwordEncoder.encode("1q2w3e4r"));
-        user2.setActivated(true);
+        user2.setActivated(false);
         user2.setActivationKey(RandomUtil.generateActivationKey());
         user2.setAuthorities(new HashSet<Autorizacao>(Arrays.asList(aut3)));
 		
@@ -380,8 +380,6 @@ public class PedidoApplication implements CommandLineRunner {
 		user1.setCliente(cli1);
 		user2.setCliente(cli2);
         
-		clienteRepository.saveAll(new HashSet<Cliente>(Arrays.asList(cli1, cli2)));        
-
 		Endereco e1 = new Endereco();
 		e1.setLogradouro("Rua Flores");
 		e1.setNumero("300");
@@ -407,8 +405,11 @@ public class PedidoApplication implements CommandLineRunner {
 		e3.setCep("281777012");
 		e3.setCidade(c2);
 		e3.setCliente(cli2);
+		
+		cli1.setEnderecos(new HashSet<Endereco>(Arrays.asList(e1, e2)));
+		cli2.setEnderecos(new HashSet<Endereco>(Arrays.asList(e3)));
 
-		enderecoRepository.saveAll(new HashSet<Endereco>(Arrays.asList(e1, e2, e3)));
+		clienteRepository.saveAll(new HashSet<Cliente>(Arrays.asList(cli1, cli2))); 
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 

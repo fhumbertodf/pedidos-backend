@@ -41,13 +41,11 @@ public class DomainUserDetailsService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(final String login) {
         log.debug("Authenticating {}", login);
-
         if (new EmailValidator().isValid(login, null)) {
         	return clienteRepository.findOneWithAuthoritiesByEmailIgnoreCase(login)
                 .map(cliente -> createSpringSecurityUser(login, cliente.getUser()))
                 .orElseThrow(() -> new UsernameNotFoundException("User with email " + login + " was not found in the database"));
         }
-
         String lowercaseLogin = login.toLowerCase(Locale.ENGLISH);
         return userRepository.findOneWithAuthoritiesByLogin(lowercaseLogin)
             .map(user -> createSpringSecurityUser(lowercaseLogin, user))

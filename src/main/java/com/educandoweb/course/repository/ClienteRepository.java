@@ -16,8 +16,8 @@ import com.educandoweb.course.domain.Cliente;
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 	
-	Optional<Cliente> findOneByEmailIgnoreCase(String email);
-	
 	@Query("select c from Cliente c join c.user.authorities where c.email = :email")
 	Optional<Cliente> findOneWithAuthoritiesByEmailIgnoreCase(@Param("email") String email);
+	
+	Optional<Cliente> findOneByEmailIgnoreCase(String email);
 }
