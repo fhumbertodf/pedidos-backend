@@ -9,8 +9,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import com.educandoweb.course.domain.Authority;
-import com.educandoweb.course.domain.User;
+import com.educandoweb.course.domain.Autorizacao;
+import com.educandoweb.course.domain.Usuario;
 
 /**
  * A DTO representing a user, with his authorities.
@@ -43,7 +43,7 @@ public class UserDTO {
         // Empty constructor needed for Jackson.
     }
 
-    public UserDTO(User user) {
+    public UserDTO(Usuario user) {
         this.id = user.getId();
         this.login = user.getLogin();
         //this.email = user.getEmail();
@@ -51,7 +51,7 @@ public class UserDTO {
         this.langKey = user.getLangKey();
         this.createdDate = user.getCreatedDate();        
         this.authorities = user.getAuthorities().stream()
-            .map(Authority::getName)
+            .map(Autorizacao::getName)
             .collect(Collectors.toSet());
     }
 

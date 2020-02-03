@@ -14,7 +14,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "jhi_authority")
-public class Authority implements Serializable {
+public class Autorizacao implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -37,10 +37,10 @@ public class Authority implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Authority)) {
+        if (!(o instanceof Autorizacao)) {
             return false;
         }
-        return Objects.equals(name, ((Authority) o).name);
+        return Objects.equals(name, ((Autorizacao) o).name);
     }
 
     @Override

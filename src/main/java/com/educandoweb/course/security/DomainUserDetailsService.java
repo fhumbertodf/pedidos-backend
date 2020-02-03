@@ -9,15 +9,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.educandoweb.course.domain.User;
+import com.educandoweb.course.domain.Usuario;
 import com.educandoweb.course.repository.ClienteRepository;
-import com.educandoweb.course.repository.UserRepository;
+import com.educandoweb.course.repository.UsuarioRepository;
 
 /**
  * Authenticate a user from the database.
@@ -29,9 +30,9 @@ public class DomainUserDetailsService implements UserDetailsService {
     
     private final ClienteRepository clienteRepository;
     
-    private final UserRepository userRepository;
+    private final UsuarioRepository userRepository;
 
-    public DomainUserDetailsService(ClienteRepository clienteRepository, UserRepository userRepository) {
+    public DomainUserDetailsService(ClienteRepository clienteRepository, UsuarioRepository userRepository) {
     	this.clienteRepository = clienteRepository;
     	this.userRepository = userRepository;
     }
@@ -42,7 +43,7 @@ public class DomainUserDetailsService implements UserDetailsService {
         log.debug("Authenticating {}", login);
 
         if (new EmailValidator().isValid(login, null)) {
-            return clienteRepository.findOneByEmailIgnoreCase(login)
+        	return clienteRepository.findOneWithAuthoritiesByEmailIgnoreCase(login)
                 .map(cliente -> createSpringSecurityUser(login, cliente.getUser()))
                 .orElseThrow(() -> new UsernameNotFoundException("User with email " + login + " was not found in the database"));
         }
@@ -53,15 +54,13 @@ public class DomainUserDetailsService implements UserDetailsService {
             .orElseThrow(() -> new UsernameNotFoundException("User " + lowercaseLogin + " was not found in the database"));
     }
 
-    private org.springframework.security.core.userdetails.User createSpringSecurityUser(String lowercaseLogin, User user) {
+    private User createSpringSecurityUser(String lowercaseLogin, Usuario user) {
         if (!user.getActivated()) {
             throw new UserNotActivatedException("User " + lowercaseLogin + " was not activated");
         }
         List<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
             .map(authority -> new SimpleGrantedAuthority(authority.getName()))
             .collect(Collectors.toList());
-        return new org.springframework.security.core.userdetails.User(user.getLogin(),
-            user.getPassword(),
-            grantedAuthorities);
+        return new User(user.getLogin(), user.getPassword(), grantedAuthorities);
     }
 }

@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.educandoweb.course.domain.Cliente;
-import com.educandoweb.course.domain.User;
+import com.educandoweb.course.domain.Usuario;
 import com.educandoweb.course.repository.ClienteRepository;
-import com.educandoweb.course.repository.UserRepository;
+import com.educandoweb.course.repository.UsuarioRepository;
 import com.educandoweb.course.security.SecurityUtils;
 import com.educandoweb.course.service.MailService;
 import com.educandoweb.course.service.UserService;
@@ -54,13 +54,13 @@ public class AccountResource {
     
     private final ClienteRepository clienteRepository;
 
-    private final UserRepository userRepository;
+    private final UsuarioRepository userRepository;
 
     private final UserService userService;
 
     private final MailService mailService;
 
-    public AccountResource(UserRepository userRepository, UserService userService, MailService mailService, ClienteRepository clienteRepository) {
+    public AccountResource(UsuarioRepository userRepository, UserService userService, MailService mailService, ClienteRepository clienteRepository) {
     	this.clienteRepository = clienteRepository;
         this.userRepository = userRepository;
         this.userService = userService;
@@ -81,7 +81,7 @@ public class AccountResource {
         if (!checkPasswordLength(managedUserVM.getPassword())) {
             throw new InvalidPasswordException();
         }
-        User user = userService.registerUser(managedUserVM, managedUserVM.getPassword());
+        Usuario user = userService.registerUser(managedUserVM, managedUserVM.getPassword());
         mailService.sendActivationEmail(user);
     }
 
@@ -93,7 +93,7 @@ public class AccountResource {
      */
     @GetMapping("/activate")
     public void activateAccount(@RequestParam(value = "key") String key) {
-        Optional<User> user = userService.activateRegistration(key);
+        Optional<Usuario> user = userService.activateRegistration(key);
         if (!user.isPresent()) {
             throw new AccountResourceException("No user was found for this activation key");
         }
@@ -138,7 +138,7 @@ public class AccountResource {
         if (existingUser.isPresent() && (!existingUser.get().getUser().getLogin().equalsIgnoreCase(userLogin))) {
             throw new EmailAlreadyUsedException();
         }
-        Optional<User> user = userRepository.findOneByLogin(userLogin);
+        Optional<Usuario> user = userRepository.findOneByLogin(userLogin);
         if (!user.isPresent()) {
             throw new AccountResourceException("User could not be found");
         }
@@ -185,7 +185,7 @@ public class AccountResource {
         if (!checkPasswordLength(keyAndPassword.getNewPassword())) {
             throw new InvalidPasswordException();
         }
-        Optional<User> user =
+        Optional<Usuario> user =
             userService.completePasswordReset(keyAndPassword.getNewPassword(), keyAndPassword.getKey());
 
         if (!user.isPresent()) {

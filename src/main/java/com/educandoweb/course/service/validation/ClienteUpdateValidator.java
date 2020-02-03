@@ -10,9 +10,9 @@ import javax.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.educandoweb.course.domain.Cliente;
-import com.educandoweb.course.domain.User;
+import com.educandoweb.course.domain.Usuario;
 import com.educandoweb.course.repository.ClienteRepository;
-import com.educandoweb.course.repository.UserRepository;
+import com.educandoweb.course.repository.UsuarioRepository;
 import com.educandoweb.course.service.dto.ClienteDTO;
 import com.educandoweb.course.web.errors.FieldMessage;
 
@@ -25,7 +25,7 @@ public class ClienteUpdateValidator implements ConstraintValidator<ClienteUpdate
 	private ClienteRepository clienteRepository;
 	
 	@Autowired
-	private UserRepository userRepository;
+	private UsuarioRepository userRepository;
 	
 	@Override
 	public void initialize(ClienteUpdate ann) {
@@ -44,7 +44,7 @@ public class ClienteUpdateValidator implements ConstraintValidator<ClienteUpdate
         if (existingCliente.isPresent() && (!existingCliente.get().getId().equals(dto.getId()))) {
             list.add(new FieldMessage("email", "Email já usado"));
         }
-        Optional<User> existingUser = userRepository.findOneByLogin(dto.getLogin().toLowerCase());
+        Optional<Usuario> existingUser = userRepository.findOneByLogin(dto.getLogin().toLowerCase());
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(dto.getId()))) {
             list.add(new FieldMessage("login", "Login já usado"));
         }

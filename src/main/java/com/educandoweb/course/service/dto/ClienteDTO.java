@@ -13,8 +13,8 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Length;
 
-import com.educandoweb.course.domain.Authority;
-import com.educandoweb.course.domain.User;
+import com.educandoweb.course.domain.Autorizacao;
+import com.educandoweb.course.domain.Usuario;
 import com.educandoweb.course.service.validation.ClienteUpdate;
 
 @ClienteUpdate
@@ -52,13 +52,13 @@ public class ClienteDTO implements Serializable {
 	@Email
 	private String email;
 	
-	public ClienteDTO(User user) {
+	public ClienteDTO(Usuario user) {
 		this.id = user.getId();
 		this.login = user.getLogin();
 		this.activated = user.getActivated();
 		this.langKey = user.getLangKey();
 		this.createdDate = user.getCreatedDate();
-		this.authorities = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
+		this.authorities = user.getAuthorities().stream().map(Autorizacao::getName).collect(Collectors.toSet());
 	}
 
 	public Long getId() {

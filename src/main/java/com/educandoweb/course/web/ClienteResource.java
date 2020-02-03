@@ -24,9 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.educandoweb.course.domain.User;
+import com.educandoweb.course.domain.Usuario;
 import com.educandoweb.course.repository.ClienteRepository;
-import com.educandoweb.course.repository.UserRepository;
+import com.educandoweb.course.repository.UsuarioRepository;
 import com.educandoweb.course.service.ClienteService;
 import com.educandoweb.course.service.MailService;
 import com.educandoweb.course.service.UserService;
@@ -58,7 +58,7 @@ public class ClienteResource {
 	private final MailService mailService;
 
 	public ClienteResource(ClienteRepository clienteRepository, ClienteService clienteService,
-			UserRepository userRepository, UserService userService, MailService mailService) {
+			UsuarioRepository userRepository, UserService userService, MailService mailService) {
 		this.clienteService = clienteService;
 		this.userService = userService;
 		this.mailService = mailService;
@@ -79,7 +79,7 @@ public class ClienteResource {
 		if (cliente.getId() != null) {
 			throw new BadRequestAlertException("A new cliente cannot already have an ID", ENTITY_NAME, "idexists");			
 		} else {
-			User newUser = userService.createUser(cliente);
+			Usuario newUser = userService.createUser(cliente);
 			ClienteDTO result = clienteService.insert(cliente, newUser);
 			mailService.sendCreationEmail(newUser);
 			URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId())
@@ -104,7 +104,7 @@ public class ClienteResource {
 	@PutMapping("/clientes")
 	public ResponseEntity<ClienteDTO> updateCliente(@Valid @RequestBody ClienteDTO cliente) throws URISyntaxException {
 		log.debug("REST request to update Cliente : {}", cliente);		
-        Optional<User> updatedUser = userService.updateUser(cliente);
+        Optional<Usuario> updatedUser = userService.updateUser(cliente);
         updatedUser.orElseThrow(() -> new ObjectNotFoundAlertException("userManagement.updated", "User", cliente.getLogin()));
 		if (cliente.getId() == null) {
 			throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");

@@ -10,7 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.educandoweb.course.domain.Authority;
+import com.educandoweb.course.domain.Autorizacao;
 import com.educandoweb.course.domain.Categoria;
 import com.educandoweb.course.domain.Cidade;
 import com.educandoweb.course.domain.Cliente;
@@ -22,11 +22,11 @@ import com.educandoweb.course.domain.PagamentoComBoleto;
 import com.educandoweb.course.domain.PagamentoComCartao;
 import com.educandoweb.course.domain.Pedido;
 import com.educandoweb.course.domain.Produto;
-import com.educandoweb.course.domain.User;
+import com.educandoweb.course.domain.Usuario;
 import com.educandoweb.course.domain.enumeration.EstadoPagamento;
 import com.educandoweb.course.domain.enumeration.Perfil;
 import com.educandoweb.course.domain.enumeration.TipoCliente;
-import com.educandoweb.course.repository.AuthorityRepository;
+import com.educandoweb.course.repository.AutorizacaoRepository;
 import com.educandoweb.course.repository.CategoriaRepository;
 import com.educandoweb.course.repository.CidadeRepository;
 import com.educandoweb.course.repository.ClienteRepository;
@@ -36,14 +36,14 @@ import com.educandoweb.course.repository.ItemPedidoRepository;
 import com.educandoweb.course.repository.PagamentoRepository;
 import com.educandoweb.course.repository.PedidoRepository;
 import com.educandoweb.course.repository.ProdutoRepository;
-import com.educandoweb.course.repository.UserRepository;
+import com.educandoweb.course.repository.UsuarioRepository;
 import com.educandoweb.course.util.RandomUtil;
 
 @SpringBootApplication
 public class PedidoApplication implements CommandLineRunner {
 	
 	@Autowired
-	AuthorityRepository authorityRepository;
+	AutorizacaoRepository authorityRepository;
 
 	@Autowired
 	CategoriaRepository categoriaRepository;
@@ -76,7 +76,7 @@ public class PedidoApplication implements CommandLineRunner {
 	ProdutoRepository produtoRepository;
 	
 	@Autowired
-	UserRepository userRepository;	
+	UsuarioRepository userRepository;	
 
 	public static void main(String[] args) {
 		SpringApplication.run(PedidoApplication.class, args);
@@ -85,13 +85,13 @@ public class PedidoApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		
-		Authority aut1 = new Authority();
+		Autorizacao aut1 = new Autorizacao();
 		aut1.setName(Perfil.ADMIN.getDescricao());
 		
-		Authority aut2 = new Authority();
+		Autorizacao aut2 = new Autorizacao();
 		aut2.setName(Perfil.ANONYMOUS.getDescricao());
 		
-		Authority aut3 = new Authority();
+		Autorizacao aut3 = new Autorizacao();
 		aut3.setName(Perfil.USER.getDescricao());
 		
 		authorityRepository.saveAll(Arrays.asList(aut1,aut2,aut3));
@@ -345,12 +345,12 @@ public class PedidoApplication implements CommandLineRunner {
 		estadoRepository.saveAll(new HashSet<Estado>(Arrays.asList(est1, est2)));
 		cidadeRepository.saveAll(new HashSet<Cidade>(Arrays.asList(c1, c2, c3)));
 		
-		User user1 = new User();
+		Usuario user1 = new Usuario();
         user1.setLogin("maria@gmail.com");
         user1.setPassword(passwordEncoder.encode("1q2w3e4r"));
-        user1.setActivated(false);
+        user1.setActivated(true);
         user1.setActivationKey(RandomUtil.generateActivationKey());
-        user1.setAuthorities(new HashSet<Authority>(Arrays.asList(aut3)));
+        user1.setAuthorities(new HashSet<Autorizacao>(Arrays.asList(aut3)));
                 
         Cliente cli1 = new Cliente();
 		cli1.setNome("Maria Silva");
@@ -361,12 +361,12 @@ public class PedidoApplication implements CommandLineRunner {
 		
 		cli1.setTelefones(new HashSet<String>(Arrays.asList("27363323", "93838393")));
 		
-		User user2 = new User();
+		Usuario user2 = new Usuario();
         user2.setLogin("nelio.iftm@gmail.com");
         user2.setPassword(passwordEncoder.encode("1q2w3e4r"));
-        user2.setActivated(false);
+        user2.setActivated(true);
         user2.setActivationKey(RandomUtil.generateActivationKey());
-        user2.setAuthorities(new HashSet<Authority>(Arrays.asList(aut3)));
+        user2.setAuthorities(new HashSet<Autorizacao>(Arrays.asList(aut3)));
 		
 		Cliente cli2 = new Cliente();
 		cli2.setNome("Ana Costa");

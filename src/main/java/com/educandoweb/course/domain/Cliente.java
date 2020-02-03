@@ -62,7 +62,7 @@ public class Cliente implements Serializable {
 	@OneToOne
 	@JoinColumn(name="user_id")
 	@MapsId  
-    private User user;
+    private Usuario user;
     
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -183,11 +183,11 @@ public class Cliente implements Serializable {
         this.pedidos = pedidos;
     }
     
-    public User getUser() {
+    public Usuario getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(Usuario user) {
 		this.user = user;
 	}
     

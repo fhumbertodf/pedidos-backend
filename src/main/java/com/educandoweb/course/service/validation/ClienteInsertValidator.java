@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.educandoweb.course.domain.enumeration.TipoCliente;
 import com.educandoweb.course.repository.ClienteRepository;
-import com.educandoweb.course.repository.UserRepository;
+import com.educandoweb.course.repository.UsuarioRepository;
 import com.educandoweb.course.service.dto.ClienteNewDTO;
 import com.educandoweb.course.util.BR;
 import com.educandoweb.course.web.errors.FieldMessage;
@@ -21,7 +21,7 @@ public class ClienteInsertValidator implements ConstraintValidator<ClienteInsert
 	private ClienteRepository clienteRepository;
 	
 	@Autowired
-	private UserRepository userRepository;
+	private UsuarioRepository userRepository;
 	
 	@Override
 	public void initialize(ClienteInsert ann) {

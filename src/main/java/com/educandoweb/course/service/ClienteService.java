@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.educandoweb.course.domain.Cliente;
-import com.educandoweb.course.domain.User;
+import com.educandoweb.course.domain.Usuario;
 import com.educandoweb.course.repository.ClienteRepository;
 import com.educandoweb.course.service.dto.ClienteDTO;
 import com.educandoweb.course.service.dto.ClienteNewDTO;
@@ -45,7 +45,7 @@ public class ClienteService {
 	 * @param clienteDTO the entity to save.
 	 * @return the persisted entity.
 	 */
-	public ClienteDTO insert(ClienteNewDTO clienteDTO, User user) {
+	public ClienteDTO insert(ClienteNewDTO clienteDTO, Usuario user) {
 		log.debug("Request to save Cliente : {}", clienteDTO);
 		Cliente cliente = clienteNewMapper.toEntity(clienteDTO);
 		cliente.setUser(user);
@@ -59,7 +59,7 @@ public class ClienteService {
 	 * @param clienteDTO the entity to save.
 	 * @return the persisted entity.
 	 */
-	public ClienteDTO save(ClienteDTO clienteDTO, User user) {
+	public ClienteDTO save(ClienteDTO clienteDTO, Usuario user) {
 		log.debug("Request to save Cliente : {}", clienteDTO);
 		Cliente cliente = clienteMapper.toEntity(clienteDTO);
 		cliente.setUser(user);

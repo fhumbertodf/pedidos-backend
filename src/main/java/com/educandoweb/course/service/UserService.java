@@ -18,11 +18,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.educandoweb.course.domain.Authority;
-import com.educandoweb.course.domain.User;
+import com.educandoweb.course.domain.Autorizacao;
+import com.educandoweb.course.domain.Usuario;
 import com.educandoweb.course.domain.enumeration.Perfil;
-import com.educandoweb.course.repository.AuthorityRepository;
-import com.educandoweb.course.repository.UserRepository;
+import com.educandoweb.course.repository.AutorizacaoRepository;
+import com.educandoweb.course.repository.UsuarioRepository;
 import com.educandoweb.course.security.SecurityUtils;
 import com.educandoweb.course.service.dto.ClienteDTO;
 import com.educandoweb.course.service.dto.ClienteNewDTO;
@@ -41,19 +41,19 @@ public class UserService {
     
     public static final String DEFAULT_LANGUAGE = "pt-br";    
     
-    private final UserRepository userRepository;
+    private final UsuarioRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
 
-    private final AuthorityRepository authorityRepository;
+    private final AutorizacaoRepository authorityRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository) {
+    public UserService(UsuarioRepository userRepository, PasswordEncoder passwordEncoder, AutorizacaoRepository authorityRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
     }
 
-    public Optional<User> activateRegistration(String key) {
+    public Optional<Usuario> activateRegistration(String key) {
         log.debug("Activating user for activation key {}", key);
         return userRepository.findOneByActivationKey(key)
             .map(user -> {
@@ -65,7 +65,7 @@ public class UserService {
             });
     }
 
-    public Optional<User> completePasswordReset(String newPassword, String key) {
+    public Optional<Usuario> completePasswordReset(String newPassword, String key) {
         log.debug("Reset user password for reset key {}", key);
         return userRepository.findOneByResetKey(key)
             .filter(user -> user.getResetDate().isAfter(Instant.now().minusSeconds(86400)))
@@ -77,7 +77,7 @@ public class UserService {
             });
     }
 
-    public Optional<User> requestPasswordReset(String mail) {
+    public Optional<Usuario> requestPasswordReset(String mail) {
         return null; /* userRepository.findOneByEmailIgnoreCase(mail)
             .filter(User::getActivated)
             .map(user -> {
@@ -87,7 +87,7 @@ public class UserService {
             });*/
     }
 
-    public User registerUser(UserDTO userDTO, String password) {
+    public Usuario registerUser(UserDTO userDTO, String password) {
         userRepository.findOneByLogin(userDTO.getLogin().toLowerCase()).ifPresent(existingUser -> {
             boolean removed = removeNonActivatedUser(existingUser);
             if (!removed) {
@@ -100,7 +100,7 @@ public class UserService {
                 throw new EmailAlreadyUsedException();
             }
         });*/
-        User newUser = new User();
+        Usuario newUser = new Usuario();
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setLogin(userDTO.getLogin().toLowerCase());
         // new user gets initially a generated password
@@ -111,7 +111,7 @@ public class UserService {
         newUser.setActivated(false);
         // new user gets registration key
         newUser.setActivationKey(RandomUtil.generateActivationKey());
-        Set<Authority> authorities = new HashSet<>();
+        Set<Autorizacao> authorities = new HashSet<>();
         authorityRepository.findById(Perfil.USER.getDescricao()).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
@@ -119,7 +119,7 @@ public class UserService {
         return newUser;
     }
 
-    private boolean removeNonActivatedUser(User existingUser){
+    private boolean removeNonActivatedUser(Usuario existingUser){
         if (existingUser.getActivated()) {
              return false;
         }
@@ -128,8 +128,8 @@ public class UserService {
         return true;
     }
 
-    public User createUser(ClienteNewDTO userDTO) {
-        User user = new User();
+    public Usuario createUser(ClienteNewDTO userDTO) {
+        Usuario user = new Usuario();
         user.setLogin(userDTO.getLogin().toLowerCase());                
         if (userDTO.getLangKey() == null) {
             user.setLangKey(DEFAULT_LANGUAGE); // default language
@@ -141,7 +141,7 @@ public class UserService {
         user.setResetDate(Instant.now());
         user.setActivated(true);
         if (userDTO.getAuthorities() != null) {
-            Set<Authority> authorities = userDTO.getAuthorities().stream()
+            Set<Autorizacao> authorities = userDTO.getAuthorities().stream()
                 .map(authorityRepository::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -177,7 +177,7 @@ public class UserService {
      * @param userDTO user to update.
      * @return updated user.
      */
-    public Optional<User> updateUser(ClienteDTO userDTO) {
+    public Optional<Usuario> updateUser(ClienteDTO userDTO) {
         return Optional.of(
 				userRepository.findById(userDTO.getId()))
             .filter(Optional::isPresent)
@@ -186,7 +186,7 @@ public class UserService {
                 user.setLogin(userDTO.getLogin().toLowerCase());                                
                 user.setActivated(userDTO.isActivated());
                 user.setLangKey(userDTO.getLangKey());
-                Set<Authority> managedAuthorities = user.getAuthorities();
+                Set<Autorizacao> managedAuthorities = user.getAuthorities();
                 managedAuthorities.clear();
                 userDTO.getAuthorities().stream()
                     .map(authorityRepository::findById)
@@ -225,17 +225,17 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> getUserWithAuthoritiesByLogin(String login) {
+    public Optional<Usuario> getUserWithAuthoritiesByLogin(String login) {
         return userRepository.findOneWithAuthoritiesByLogin(login);
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> getUserWithAuthorities(Long id) {
+    public Optional<Usuario> getUserWithAuthorities(Long id) {
         return userRepository.findOneWithAuthoritiesById(id);
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> getUserWithAuthorities() {
+    public Optional<Usuario> getUserWithAuthorities() {
         return null; //SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneWithAuthoritiesByLogin);
     }
 
@@ -259,7 +259,7 @@ public class UserService {
      * @return a list of all the authorities.
      */
     public List<String> getAuthorities() {
-        return authorityRepository.findAll().stream().map(Authority::getName).collect(Collectors.toList());
+        return authorityRepository.findAll().stream().map(Autorizacao::getName).collect(Collectors.toList());
     }
 
 }
