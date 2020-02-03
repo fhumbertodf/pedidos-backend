@@ -123,7 +123,7 @@ public class ContaResource {
 	 *         the cliente, or with status {@code 404 (Not Found)}.
 	 */
 	@GetMapping("/account")
-	public ResponseEntity<ClienteDTO> getCliente() {
+	public ResponseEntity<ClienteDTO> getCliente() {		
 		log.debug("REST request to get Cliente : {}");
 		String userLogin = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new AccountResourceException("Current user login not found")); 
 		Optional<ClienteDTO> cliente = clienteService.findOne(userLogin);
@@ -148,8 +148,7 @@ public class ContaResource {
 		if (cliente.getId() == null) {
 			throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
 		} else {
-			clienteService.findOne(cliente.getId())
-					.orElseThrow(() -> new BadRequestAlertException("Invalid id", ENTITY_NAME, "id not found"));
+			clienteService.findOne(cliente.getId()).orElseThrow(() -> new BadRequestAlertException("Invalid id", ENTITY_NAME, "id not found"));
 		}
 		Usuario user = userService.updateUser();        
 		clienteService.save(cliente, user);
@@ -180,7 +179,8 @@ public class ContaResource {
 	 */
 	@PostMapping(path = "/account/reset-password/init")
 	public void requestPasswordReset(@RequestBody String mail) {
-		mailService.sendPasswordResetMail(userService.requestPasswordReset(mail).orElseThrow(EmailNotFoundException::new));
+		Usuario user = userService.requestPasswordReset(mail).orElseThrow(EmailNotFoundException::new);
+		//mailService.sendPasswordResetMail(user);
 	}
 
 	/**
