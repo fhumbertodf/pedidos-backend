@@ -9,14 +9,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.educandoweb.course.domain.Categoria;
 import com.educandoweb.course.domain.Pedido;
 import com.educandoweb.course.repository.PedidoRepository;
 import com.educandoweb.course.service.dto.PedidoDTO;
 import com.educandoweb.course.service.mapper.PedidoMapper;
 
 /**
- * Service Implementation for managing {@link Categoria}.
+ * Service Implementation for managing {@link Pedido}.
  */
 @Service
 @Transactional
@@ -34,51 +33,50 @@ public class PedidoService {
     }
 
     /**
-     * Save a categoria.
+     * Save a pedido.
      *
-     * @param categoriaDTO the entity to save.
+     * @param pedidoDTO the entity to save.
      * @return the persisted entity.
      */
     public PedidoDTO save(PedidoDTO pedidoDTO) {
-        log.debug("Request to save Categoria : {}", pedidoDTO);
+        log.debug("Request to save Pedido : {}", pedidoDTO);
         Pedido pedido = pedidoMapper.toEntity(pedidoDTO);
         pedido = pedidoRepository.save(pedido);
         return pedidoMapper.toDto(pedido);
     }
 
     /**
-     * Get all the categorias.
+     * Get all the pedidos.
      *
      * @param pageable the pagination information.
      * @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public Page<PedidoDTO> findAll(Pageable pageable) {
+    public Page<PedidoDTO> findAll(String emailCliente, Pageable pageable) {
         log.debug("Request to get all Pedidos");
-        return pedidoRepository.findAll(pageable)
-            .map(pedidoMapper::toDto);
+        return pedidoRepository.findByCliente(emailCliente, pageable).map(pedidoMapper::toDto);
     }
 
 
     /**
-     * Get one categoria by id.
+     * Get one pedido by id.
      *
      * @param id the id of the entity.
      * @return the entity.
      */
     @Transactional(readOnly = true)
-    public Optional<Pedido> findOne(Long id) {
-        log.debug("Request to get Categoria : {}", id);
-        return pedidoRepository.findById(id); //.map(pedidoMapper::toDto);
+    public Optional<Pedido> findOne(String emailCliente, Long id) {
+        log.debug("Request to get Pedido : {}", id);
+        return pedidoRepository.findByCliente(emailCliente, id); //.map(pedidoMapper::toDto);
     }
 
     /**
-     * Delete the categoria by id.
+     * Delete the pedido by id.
      *
      * @param id the id of the entity.
      */
     public void delete(Long id) {
-        log.debug("Request to delete Categoria : {}", id);
+        log.debug("Request to delete Pedido : {}", id);
         pedidoRepository.deleteById(id);        
     }
 }

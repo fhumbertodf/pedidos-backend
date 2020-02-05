@@ -1,5 +1,6 @@
 package com.educandoweb.course.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -52,9 +53,9 @@ public class ProdutoService {
      * @return the list of entities.
      */
     @Transactional(readOnly = true)
-    public Page<ProdutoDTO> findAll(Pageable pageable) {
+    public Page<ProdutoDTO> findAll(String nome, List<Long> categorias, Pageable pageable) {
         log.debug("Request to get all Produtos");
-        return produtoRepository.findAll(pageable)
+        return produtoRepository.findDistinctByNomeContainingAndCategoriasIn(nome, categorias, pageable)
             .map(produtoMapper::toDto);
     }
 

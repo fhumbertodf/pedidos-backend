@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.educandoweb.course.domain.Pedido;
+import com.educandoweb.course.security.SecurityUtils;
 import com.educandoweb.course.service.PedidoService;
 import com.educandoweb.course.service.dto.PedidoDTO;
 import com.educandoweb.course.web.errors.BadRequestAlertException;
@@ -77,7 +78,7 @@ public class PedidoResource {
     @GetMapping("/pedidos")
     public ResponseEntity<Page<PedidoDTO>> getAllPedidos(Pageable pageable) {
         log.debug("REST request to get a page of Pedidos");
-        Page<PedidoDTO> page = pedidoService.findAll(pageable);        
+        Page<PedidoDTO> page = pedidoService.findAll(SecurityUtils.getCurrentUserLogin().get(), pageable);        
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);        
         return ResponseEntity.ok().headers(headers).body(page);
     }
@@ -91,7 +92,7 @@ public class PedidoResource {
     @GetMapping("/pedidos/{id}")
     public ResponseEntity<Pedido> getPedido(@PathVariable Long id) {
         log.debug("REST request to get Pedido : {}", id);
-        Optional<Pedido> pedido = pedidoService.findOne(id);
+        Optional<Pedido> pedido = pedidoService.findOne(SecurityUtils.getCurrentUserLogin().get(), id);
         Pedido result = pedido.orElseThrow(() -> new ObjectNotFoundAlertException("Invalid id", ENTITY_NAME, "id not found"));
         return ResponseEntity.ok().body(result);
     }    
