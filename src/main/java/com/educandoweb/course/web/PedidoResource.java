@@ -10,11 +10,9 @@ import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,25 +59,6 @@ public class PedidoResource {
     }
 
     /**
-     * {@code PUT  /pedidos} : Updates an existing pedido.
-     *
-     * @param pedido the pedido to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated pedido,
-     * or with status {@code 400 (Bad Request)} if the pedido is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the pedido couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PutMapping("/pedidos")
-    public ResponseEntity<Pedido> updatePedido(@RequestBody Pedido pedido) throws URISyntaxException {
-        log.debug("REST request to update Pedido : {}", pedido);
-        if (pedido.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        Pedido result = pedidoRepository.save(pedido);
-        return ResponseEntity.ok().body(result);
-    }
-
-    /**
      * {@code GET  /pedidos} : get all the pedidos.
      *
 
@@ -111,18 +90,5 @@ public class PedidoResource {
         Optional<Pedido> pedido = pedidoRepository.findById(id);
         Pedido result = pedido.orElseThrow(() -> new BadRequestAlertException("Invalid id", ENTITY_NAME, "id not found"));
         return ResponseEntity.ok().body(result);
-    }
-
-    /**
-     * {@code DELETE  /pedidos/:id} : delete the "id" pedido.
-     *
-     * @param id the id of the pedido to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
-    @DeleteMapping("/pedidos/{id}")
-    public ResponseEntity<Void> deletePedido(@PathVariable Long id) {
-        log.debug("REST request to delete Pedido : {}", id);
-        pedidoRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
+    }    
 }

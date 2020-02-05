@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,6 +59,7 @@ public class CategoriaResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new categoria, or with status {@code 400 (Bad Request)} if the categoria has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping("/categorias")
     public ResponseEntity<CategoriaDTO> createCategoria(@Valid @RequestBody CategoriaDTO categoria) throws URISyntaxException {
         log.debug("REST request to save Categoria : {}", categoria);
@@ -80,6 +82,7 @@ public class CategoriaResource {
      * or with status {@code 500 (Internal Server Error)} if the categoria couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/categorias")
     public ResponseEntity<CategoriaDTO> updateCategoria(@Valid @RequestBody CategoriaDTO categoria) throws URISyntaxException {
         log.debug("REST request to update Categoria : {}", categoria);
@@ -128,6 +131,7 @@ public class CategoriaResource {
      * @param id the id of the categoria to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping("/categorias/{id}")
     public ResponseEntity<Void> deleteCategoria(@PathVariable Long id) {
         log.debug("REST request to delete Categoria : {}", id);        
