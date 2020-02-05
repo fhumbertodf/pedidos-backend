@@ -2,26 +2,30 @@ package com.educandoweb.course.web;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.educandoweb.course.domain.Pedido;
-import com.educandoweb.course.repository.PedidoRepository;
+import com.educandoweb.course.service.PedidoService;
+import com.educandoweb.course.service.dto.PedidoDTO;
 import com.educandoweb.course.web.errors.BadRequestAlertException;
+import com.educandoweb.course.web.errors.ObjectNotFoundAlertException;
+import com.educandoweb.course.web.util.HeaderUtil;
+import com.educandoweb.course.web.util.PaginationUtil;
 
 /**
  * REST controller for managing {@link com.educandoweb.course.domain.Pedido}.
@@ -33,11 +37,14 @@ public class PedidoResource {
     private final Logger log = LoggerFactory.getLogger(PedidoResource.class);
 
     private static final String ENTITY_NAME = "pedido";
+    
+    @Value("${jhipster.clientApp.name}")
+    private String applicationName;
 
-    private final PedidoRepository pedidoRepository;
+    private final PedidoService pedidoService;
 
-    public PedidoResource(PedidoRepository pedidoRepository) {
-        this.pedidoRepository = pedidoRepository;
+    public PedidoResource(PedidoService pedidoService) {
+        this.pedidoService = pedidoService;
     }
 
     /**
@@ -48,14 +55,16 @@ public class PedidoResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/pedidos")
-    public ResponseEntity<Pedido> createPedido(@RequestBody Pedido pedido) {
+    public ResponseEntity<PedidoDTO> createPedido(@RequestBody PedidoDTO pedido) {
         log.debug("REST request to save Pedido : {}", pedido);
         if (pedido.getId() != null) {
             throw new BadRequestAlertException("A new pedido cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Pedido result = pedidoRepository.save(pedido);        
+        PedidoDTO result = pedidoService.save(pedido);        
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result.getId()).toUri();        
-        return ResponseEntity.created(uri).body(result);        
+        return ResponseEntity.created(uri)
+        		.headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+        		.body(result);        
     }
 
     /**
@@ -66,16 +75,11 @@ public class PedidoResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of pedidos in body.
      */
     @GetMapping("/pedidos")
-    public List<Pedido> getAllPedidos(@RequestParam(required = false) String filter) {
-        if ("pagamento-is-null".equals(filter)) {
-            log.debug("REST request to get all Pedidos where pagamento is null");
-            return StreamSupport
-                .stream(pedidoRepository.findAll().spliterator(), false)
-                .filter(pedido -> pedido.getPagamento() == null)
-                .collect(Collectors.toList());
-        }
-        log.debug("REST request to get all Pedidos");
-        return pedidoRepository.findAll();
+    public ResponseEntity<Page<PedidoDTO>> getAllPedidos(Pageable pageable) {
+        log.debug("REST request to get a page of Pedidos");
+        Page<PedidoDTO> page = pedidoService.findAll(pageable);        
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);        
+        return ResponseEntity.ok().headers(headers).body(page);
     }
 
     /**
@@ -87,8 +91,8 @@ public class PedidoResource {
     @GetMapping("/pedidos/{id}")
     public ResponseEntity<Pedido> getPedido(@PathVariable Long id) {
         log.debug("REST request to get Pedido : {}", id);
-        Optional<Pedido> pedido = pedidoRepository.findById(id);
-        Pedido result = pedido.orElseThrow(() -> new BadRequestAlertException("Invalid id", ENTITY_NAME, "id not found"));
+        Optional<Pedido> pedido = pedidoService.findOne(id);
+        Pedido result = pedido.orElseThrow(() -> new ObjectNotFoundAlertException("Invalid id", ENTITY_NAME, "id not found"));
         return ResponseEntity.ok().body(result);
     }    
 }
