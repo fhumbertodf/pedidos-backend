@@ -1,4 +1,4 @@
-package com.educandoweb.course.security;
+package com.educandoweb.course.web.errors;
 
 import org.springframework.security.core.AuthenticationException;
 

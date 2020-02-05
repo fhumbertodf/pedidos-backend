@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.educandoweb.course.domain.Usuario;
 import com.educandoweb.course.repository.ClienteRepository;
 import com.educandoweb.course.repository.UsuarioRepository;
+import com.educandoweb.course.web.errors.UserNotActivatedException;
 
 /**
  * Authenticate a user from the database.
