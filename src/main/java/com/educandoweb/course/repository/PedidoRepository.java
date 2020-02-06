@@ -20,10 +20,10 @@ import com.educandoweb.course.domain.Pedido;
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
 	@Transactional(readOnly=true)
-	@Query("select p from Pedido where p.cliente.email : email")
+	@Query("select p from Pedido p where p.cliente.email = :email")
 	Page<Pedido> findByCliente(@Param("email") String email, Pageable pageRequest);
 	
 	@Transactional(readOnly=true)
-	@Query("select p from Pedido where p.cliente.email : email and p.id = :id")
+	@Query("select p from Pedido p where p.cliente.email = :email and p.id = :id")
 	Optional<Pedido> findByCliente(@Param("email") String email, @Param("id") Long id);
 }
