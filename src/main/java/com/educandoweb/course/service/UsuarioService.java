@@ -1,5 +1,6 @@
 package com.educandoweb.course.service;
 
+import java.awt.image.BufferedImage;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
@@ -10,12 +11,14 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.educandoweb.course.domain.Autorizacao;
 import com.educandoweb.course.domain.Usuario;
@@ -46,10 +49,19 @@ public class UsuarioService {
 
     private final AutorizacaoRepository authorityRepository;
     
-    public UsuarioService(UsuarioRepository userRepository, PasswordEncoder passwordEncoder, AutorizacaoRepository authorityRepository) {
+    private final ImageService imageService;
+    
+    @Value("${img.prefix.client.profile}")
+	private String prefix;
+	
+	@Value("${img.profile.size}")
+	private Integer size;
+    
+    public UsuarioService(UsuarioRepository userRepository, PasswordEncoder passwordEncoder, AutorizacaoRepository authorityRepository, ImageService imageService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
+        this.imageService = imageService;
     }
 
     public Optional<Usuario> activateRegistration(String key) {
@@ -235,5 +247,20 @@ public class UsuarioService {
     public List<String> getAuthorities() {
         return authorityRepository.findAll().stream().map(Autorizacao::getName).collect(Collectors.toList());
     }
+    
+    public void uploadProfilePicture(MultipartFile multipartFile) {
+    	Usuario user = SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneWithAuthoritiesByLogin).get();
+		if (user == null) {
+			throw new RuntimeException("Acesso negado");
+		}
+		
+		BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);
+		jpgImage = imageService.cropSquare(jpgImage);
+		jpgImage = imageService.resize(jpgImage, size);
+		
+		String fileName = prefix + user.getId() + ".jpg";
+		
+		imageService.uploadFile(imageService.getInputStream(jpgImage, "jpg"), fileName);
+	}
 
 }
