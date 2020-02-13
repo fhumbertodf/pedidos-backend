@@ -2,6 +2,7 @@ package com.educandoweb.course.web;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -104,11 +105,11 @@ public class CategoriaResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of categorias in body.
      */
     @GetMapping("/categorias")
-    public ResponseEntity<Page<CategoriaDTO>> getAllCategorias(Pageable pageable) {
+    public ResponseEntity<List<CategoriaDTO>> getAllCategorias(Pageable pageable) {
         log.debug("REST request to get a page of Categorias");
         Page<CategoriaDTO> page = categoriaService.findAll(pageable);        
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);        
-        return ResponseEntity.ok().headers(headers).body(page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
     /**
