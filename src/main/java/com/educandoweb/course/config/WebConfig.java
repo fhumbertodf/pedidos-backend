@@ -30,82 +30,90 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 public class WebConfig implements ServletContextInitializer, WebServerFactoryCustomizer<WebServerFactory> {
 
-    private final Logger log = LoggerFactory.getLogger(WebConfig.class);
-    
-    public static String SPRING_PROFILE_DEVELOPMENT = "dev";
+	private final Logger log = LoggerFactory.getLogger(WebConfig.class);
 
-    private final Environment env;
-    
-    public WebConfig(Environment env) {
-        this.env = env;
-    }
+	public static String SPRING_PROFILE_DEVELOPMENT = "dev";
 
-    @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
-        if (env.getActiveProfiles().length != 0) {
-            log.info("Web application configuration, using profiles: {}", (Object[]) env.getActiveProfiles());
-        }
-        if (env.acceptsProfiles(Profiles.of(SPRING_PROFILE_DEVELOPMENT))) {
-            initH2Console(servletContext);
-        }
-        log.info("Web application fully configured");
-    }
+	private final Environment env;
 
-    /**
-     * Customize the Servlet engine: Mime types, the document root, the cache.
-     */
-    @Override
-    public void customize(WebServerFactory server) {
-        setMimeMappings(server);
-    }
+	public WebConfig(Environment env) {
+		this.env = env;
+	}
 
-    private void setMimeMappings(WebServerFactory server) {
-        if (server instanceof ConfigurableServletWebServerFactory) {
-            MimeMappings mappings = new MimeMappings(MimeMappings.DEFAULT);
-            // IE issue, see https://github.com/jhipster/generator-jhipster/pull/711
-            mappings.add("html", MediaType.TEXT_HTML_VALUE + ";charset=" + StandardCharsets.UTF_8.name().toLowerCase());
-            // CloudFoundry issue, see https://github.com/cloudfoundry/gorouter/issues/64
-            mappings.add("json", MediaType.TEXT_HTML_VALUE + ";charset=" + StandardCharsets.UTF_8.name().toLowerCase());
-            ConfigurableServletWebServerFactory servletWebServer = (ConfigurableServletWebServerFactory) server;
-            servletWebServer.setMimeMappings(mappings);
-        }
-    }
+	@Override
+	public void onStartup(ServletContext servletContext) throws ServletException {
+		if (env.getActiveProfiles().length != 0) {
+			log.info("Web application configuration, using profiles: {}", (Object[]) env.getActiveProfiles());
+		}
+		if (env.acceptsProfiles(Profiles.of(SPRING_PROFILE_DEVELOPMENT))) {
+			initH2Console(servletContext);
+		}
+		log.info("Web application fully configured");
+	}
 
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        if (config.getAllowedOrigins() != null && !config.getAllowedOrigins().isEmpty()) {
-            log.debug("Registering CORS filter");
-            source.registerCorsConfiguration("/api/**", config);
-            source.registerCorsConfiguration("/management/**", config);
-            source.registerCorsConfiguration("/v2/api-docs", config);
-        }
-        return new CorsFilter(source);
-    }
+	/**
+	 * Customize the Servlet engine: Mime types, the document root, the cache.
+	 */
+	@Override
+	public void customize(WebServerFactory server) {
+		setMimeMappings(server);
+	}
 
-    /**
-     * Initializes H2 console.
-     */
-    private void initH2Console(ServletContext servletContext) {
-        log.debug("Initialize H2 console");
-        try {
-            // We don't want to include H2 when we are packaging for the "prod" profile and won't
-            // actually need it, so we have to load / invoke things at runtime through reflection.
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            Class<?> servletClass = Class.forName("org.h2.server.web.WebServlet", true, loader);
-            Servlet servlet = (Servlet) servletClass.getDeclaredConstructor().newInstance();
+	private void setMimeMappings(WebServerFactory server) {
+		if (server instanceof ConfigurableServletWebServerFactory) {
+			MimeMappings mappings = new MimeMappings(MimeMappings.DEFAULT);
+			// IE issue, see https://github.com/jhipster/generator-jhipster/pull/711
+			mappings.add("html", MediaType.TEXT_HTML_VALUE + ";charset=" + StandardCharsets.UTF_8.name().toLowerCase());
+			// CloudFoundry issue, see https://github.com/cloudfoundry/gorouter/issues/64
+			mappings.add("json", MediaType.TEXT_HTML_VALUE + ";charset=" + StandardCharsets.UTF_8.name().toLowerCase());
+			ConfigurableServletWebServerFactory servletWebServer = (ConfigurableServletWebServerFactory) server;
+			servletWebServer.setMimeMappings(mappings);
+		}
+	}
 
-            ServletRegistration.Dynamic h2ConsoleServlet = servletContext.addServlet("H2Console", servlet);
-            h2ConsoleServlet.addMapping("/h2-console/*");
-            h2ConsoleServlet.setInitParameter("-properties", "src/main/resources/");
-            h2ConsoleServlet.setLoadOnStartup(1);
+	@Bean
+	public CorsFilter corsFilter() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		CorsConfiguration config = new CorsConfiguration();
+		config.addAllowedOrigin("*");
+		config.addAllowedMethod("*");
+		config.addAllowedHeader("*");
+		config.addExposedHeader("Authorization,Link,X-Total-Count");
+		config.setAllowCredentials(true);
+		config.setMaxAge(1800L);
+		if (config.getAllowedOrigins() != null && !config.getAllowedOrigins().isEmpty()) {
+			log.debug("Registering CORS filter");
+			source.registerCorsConfiguration("/api/**", config);
+			source.registerCorsConfiguration("/management/**", config);
+			source.registerCorsConfiguration("/v2/api-docs", config);
+		}
+		return new CorsFilter(source);
+	}
 
-        } catch (ClassNotFoundException | LinkageError | NoSuchMethodException | InvocationTargetException e) {
-            throw new RuntimeException("Failed to load and initialize org.h2.server.web.WebServlet", e);
-        } catch (IllegalAccessException | InstantiationException e) {
-            throw new RuntimeException("Failed to instantiate org.h2.server.web.WebServlet", e);
-        }
-    }
+	/**
+	 * Initializes H2 console.
+	 */
+	private void initH2Console(ServletContext servletContext) {
+		log.debug("Initialize H2 console");
+		try {
+			// We don't want to include H2 when we are packaging for the "prod" profile and
+			// won't
+			// actually need it, so we have to load / invoke things at runtime through
+			// reflection.
+			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			Class<?> servletClass = Class.forName("org.h2.server.web.WebServlet", true, loader);
+			Servlet servlet = (Servlet) servletClass.getDeclaredConstructor().newInstance();
+
+			ServletRegistration.Dynamic h2ConsoleServlet = servletContext.addServlet("H2Console", servlet);
+			h2ConsoleServlet.addMapping("/h2-console/*");
+			h2ConsoleServlet.setInitParameter("-properties", "src/main/resources/");
+			h2ConsoleServlet.setLoadOnStartup(1);
+
+		} catch (ClassNotFoundException | LinkageError | NoSuchMethodException | InvocationTargetException e) {
+			throw new RuntimeException("Failed to load and initialize org.h2.server.web.WebServlet", e);
+		} catch (IllegalAccessException | InstantiationException e) {
+			throw new RuntimeException("Failed to instantiate org.h2.server.web.WebServlet", e);
+		}
+	}
 
 }
