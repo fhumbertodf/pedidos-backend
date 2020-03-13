@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -12,9 +11,15 @@ import javax.validation.constraints.Size;
 import com.educandoweb.course.domain.Autorizacao;
 import com.educandoweb.course.domain.Usuario;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * A DTO representing a user, with his authorities.
  */
+@Getter @Setter
+@ToString
 public class UserDTO {
 	
 	public static final String LOGIN_REGEX = "^[_.@A-Za-z0-9-]*$";
@@ -26,9 +31,9 @@ public class UserDTO {
     @Size(min = 1, max = 50)
     private String login;
 
-    @Email
-    @Size(min = 5, max = 254)
-    private String email;
+    //@Email
+    //@Size(min = 5, max = 254)
+    //private String email;
 
     private boolean activated = false;
 
@@ -54,72 +59,5 @@ public class UserDTO {
             .map(Autorizacao::getName)
             .collect(Collectors.toSet());
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public boolean isActivated() {
-        return activated;
-    }
-
-    public void setActivated(boolean activated) {
-        this.activated = activated;
-    }
-
-    public String getLangKey() {
-        return langKey;
-    }
-
-    public void setLangKey(String langKey) {
-        this.langKey = langKey;
-    }
-
-    public Instant getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Instant createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Set<String> getAuthorities() {
-        return authorities;
-    }
-
-    public void setAuthorities(Set<String> authorities) {
-        this.authorities = authorities;
-    }
-
-    @Override
-    public String toString() {
-        return "UserDTO{" +
-            "login='" + login + '\'' +
-            ", email='" + email + '\'' +
-            ", activated=" + activated +
-            ", langKey='" + langKey + '\'' +
-            ", createdDate=" + createdDate +
-            ", authorities=" + authorities +
-            "}";
-    }
+    
 }
