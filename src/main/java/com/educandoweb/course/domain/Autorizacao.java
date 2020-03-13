@@ -1,57 +1,35 @@
 package com.educandoweb.course.domain;
 
+import java.io.Serializable;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
-import java.util.Objects;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * An authority (a security role) used by Spring Security.
  */
 @Entity
 @Table(name = "jhi_authority")
+@Getter @Setter
+@EqualsAndHashCode
+@ToString
 public class Autorizacao implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    
     @NotNull
     @Size(max = 50)
     @Id
     @Column(length = 50)
     private String name;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Autorizacao)) {
-            return false;
-        }
-        return Objects.equals(name, ((Autorizacao) o).name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(name);
-    }
-
-    @Override
-    public String toString() {
-        return "Authority{" +
-            "name='" + name + '\'' +
-            "}";
-    }
+    
 }

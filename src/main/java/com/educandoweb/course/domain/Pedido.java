@@ -18,11 +18,19 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * A Pedido.
  */
 @Entity
 @Table(name = "pedido")
+@Getter @Setter
+@EqualsAndHashCode(of = "id")
+@ToString(exclude = {"pagamento", "cliente", "enderecoDeEntrega", "itens"})
 public class Pedido implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -47,58 +55,10 @@ public class Pedido implements Serializable {
     private Endereco enderecoDeEntrega;
 
     @OneToMany(mappedBy="id.pedido")
-    private Set<ItemPedido> itens = new HashSet<>();
+    private final Set<ItemPedido> itens = new HashSet<>();
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Date getInstante() {
-        return instante;
-    }
-
-    public Pedido instante(Date instante) {
-        this.instante = instante;
-        return this;
-    }
-
-    public void setInstante(Date instante) {
-        this.instante = instante;
-    }
-
-    public Pagamento getPagamento() {
-        return pagamento;
-    }
-
-    public void setPagamento(Pagamento pagamento) {
-        this.pagamento = pagamento;
-    }
-
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
-
-    public Endereco getEnderecoDeEntrega() {
-        return enderecoDeEntrega;
-    }
-
-    public void setEnderecoDeEntrega(Endereco endereco) {
-        this.enderecoDeEntrega = endereco;
-    }
-
-    public Set<ItemPedido> getItens() {
-        return itens;
-    }
-
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove.
+    
     public Pedido addItens(ItemPedido itemPedido) {
         this.itens.add(itemPedido);
         return this;
@@ -107,34 +67,5 @@ public class Pedido implements Serializable {
     public Pedido removeItens(ItemPedido itemPedido) {
         this.itens.remove(itemPedido);
         return this;
-    }
-
-    public void setItens(Set<ItemPedido> itemPedidos) {
-        this.itens = itemPedidos;
-    }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Pedido)) {
-            return false;
-        }
-        return id != null && id.equals(((Pedido) o).id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 31;
-    }
-
-    @Override
-    public String toString() {
-        return "Pedido{" +
-            "id=" + getId() +
-            ", instante='" + getInstante() + "'" +
-            "}";
     }
 }

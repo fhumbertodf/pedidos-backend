@@ -72,6 +72,5 @@ public class ClienteMapper implements EntityMapper<ClienteDTO, Cliente> {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
+
 }

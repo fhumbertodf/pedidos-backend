@@ -14,11 +14,19 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * A Estado.
  */
 @Entity
 @Table(name = "estado")
+@Getter @Setter
+@EqualsAndHashCode(of = "id")
+@ToString(exclude = "cidades")
 public class Estado implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -31,35 +39,11 @@ public class Estado implements Serializable {
     private String nome;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "estado")
+    @OneToMany(mappedBy = "estado")    
     private Set<Cidade> cidades = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public Estado nome(String nome) {
-        this.nome = nome;
-        return this;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Set<Cidade> getCidades() {
-        return cidades;
-    }
-
+    
     public Estado addCidades(Cidade cidade) {
         this.cidades.add(cidade);
         cidade.setEstado(this);
@@ -70,34 +54,5 @@ public class Estado implements Serializable {
         this.cidades.remove(cidade);
         cidade.setEstado(null);
         return this;
-    }
-
-    public void setCidades(Set<Cidade> cidades) {
-        this.cidades = cidades;
-    }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Estado)) {
-            return false;
-        }
-        return id != null && id.equals(((Estado) o).id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 31;
-    }
-
-    @Override
-    public String toString() {
-        return "Estado{" +
-            "id=" + getId() +
-            ", nome='" + getNome() + "'" +
-            "}";
-    }
+    }    
 }

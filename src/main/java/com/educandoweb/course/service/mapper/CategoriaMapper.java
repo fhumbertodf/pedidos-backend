@@ -40,6 +40,5 @@ public class CategoriaMapper implements EntityMapper<CategoriaDTO, Categoria> {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
+
 }

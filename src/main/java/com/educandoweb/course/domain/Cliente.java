@@ -21,16 +21,24 @@ import javax.validation.constraints.Size;
 import com.educandoweb.course.domain.enumeration.TipoCliente;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * A Cliente.
  */
 @Entity
 @Table(name = "cliente")
+@Getter @Setter
+@EqualsAndHashCode(of = "id")
+@ToString(exclude = {"enderecos", "telefones", "pedidos"})
 public class Cliente implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
+    @Id    
     private Long id;
 
     @Column(name = "nome")
@@ -52,10 +60,10 @@ public class Cliente implements Serializable {
 
     @ElementCollection
 	@CollectionTable(name="TELEFONE")
-	private Set<String> telefones = new HashSet<>();
+    private Set<String> telefones = new HashSet<>();
     
     @JsonIgnore
-    @OneToMany(mappedBy = "cliente")
+    @OneToMany(mappedBy = "cliente")    
     private Set<Pedido> pedidos = new HashSet<>();
     
     @JsonIgnore
@@ -65,70 +73,20 @@ public class Cliente implements Serializable {
     private Usuario user;
     
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public Cliente nome(String nome) {
-        this.nome = nome;
-        return this;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public Cliente email(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getCpfOuCnpj() {
-        return cpfOuCnpj;
-    }
-
-    public Cliente cpfOuCnpj(String cpfOuCnpj) {
-        this.cpfOuCnpj = cpfOuCnpj;
-        return this;
-    }
-
-    public void setCpfOuCnpj(String cpfOuCnpj) {
-        this.cpfOuCnpj = cpfOuCnpj;
-    }
 
     public TipoCliente getTipoCliente() {
         return TipoCliente.toEnum(tipoCliente);
     }
 
+    public void setTipoCliente(TipoCliente tipoCliente) {
+        this.tipoCliente = tipoCliente.getCod();
+    }
+    
     public Cliente tipoCliente(TipoCliente tipoCliente) {
         this.tipoCliente = tipoCliente.getCod();
         return this;
     }
-
-    public void setTipoCliente(TipoCliente tipoCliente) {
-        this.tipoCliente = tipoCliente.getCod();
-    }
-
-    public Set<Endereco> getEnderecos() {
-        return enderecos;
-    }
-
+    
     public Cliente addEnderecos(Endereco endereco) {
         this.enderecos.add(endereco);
         endereco.setCliente(this);
@@ -141,14 +99,6 @@ public class Cliente implements Serializable {
         return this;
     }
 
-    public void setEnderecos(Set<Endereco> enderecos) {
-        this.enderecos = enderecos;
-    }
-
-    public Set<String> getTelefones() {
-        return telefones;
-    }
-
     public Cliente addTelefones(String telefone) {
         this.telefones.add(telefone);
         return this;
@@ -157,14 +107,6 @@ public class Cliente implements Serializable {
     public Cliente removeTelefones(String telefone) {
         this.telefones.remove(telefone);
         return this;
-    }
-
-    public void setTelefones(Set<String> strings) {
-        this.telefones = strings;
-    }
-
-    public Set<Pedido> getPedidos() {
-        return pedidos;
     }
 
     public Cliente addPedidos(Pedido pedido) {
@@ -177,46 +119,5 @@ public class Cliente implements Serializable {
         this.pedidos.remove(pedido);
         pedido.setCliente(null);
         return this;
-    }
-
-    public void setPedidos(Set<Pedido> pedidos) {
-        this.pedidos = pedidos;
-    }
-    
-    public Usuario getUser() {
-		return user;
-	}
-
-	public void setUser(Usuario user) {
-		this.user = user;
-	}
-    
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove    
-
-	@Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Cliente)) {
-            return false;
-        }
-        return id != null && id.equals(((Cliente) o).id);
-    }
-
-    @Override
-    public int hashCode() {
-        return 31;
-    }
-
-    @Override
-    public String toString() {
-        return "Cliente{" +
-            "id=" + getId() +
-            ", nome='" + getNome() + "'" +
-            ", email='" + getEmail() + "'" +
-            ", cpfOuCnpj='" + getCpfOuCnpj() + "'" +
-            ", tipoCliente='" + getTipoCliente() + "'" +
-            "}";
-    }
+    }   
 }

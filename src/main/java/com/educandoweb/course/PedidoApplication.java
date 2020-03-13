@@ -17,7 +17,6 @@ import com.educandoweb.course.domain.Cliente;
 import com.educandoweb.course.domain.Endereco;
 import com.educandoweb.course.domain.Estado;
 import com.educandoweb.course.domain.ItemPedido;
-import com.educandoweb.course.domain.Pagamento;
 import com.educandoweb.course.domain.PagamentoComBoleto;
 import com.educandoweb.course.domain.PagamentoComCartao;
 import com.educandoweb.course.domain.Pedido;
@@ -342,8 +341,8 @@ public class PedidoApplication implements CommandLineRunner {
 		est1.setCidades(new HashSet<Cidade>(Arrays.asList(c1)));
 		est2.setCidades(new HashSet<Cidade>(Arrays.asList(c2, c3)));
 
-		estadoRepository.saveAll(new HashSet<Estado>(Arrays.asList(est1, est2)));
-		cidadeRepository.saveAll(new HashSet<Cidade>(Arrays.asList(c1, c2, c3)));
+		estadoRepository.saveAll(Arrays.asList(est1, est2));
+		cidadeRepository.saveAll(Arrays.asList(c1, c2, c3));
 		
 		Usuario user1 = new Usuario();
         user1.setLogin("maria@gmail.com");
@@ -409,7 +408,8 @@ public class PedidoApplication implements CommandLineRunner {
 		cli1.setEnderecos(new HashSet<Endereco>(Arrays.asList(e1, e2)));
 		cli2.setEnderecos(new HashSet<Endereco>(Arrays.asList(e3)));
 
-		clienteRepository.saveAll(new HashSet<Cliente>(Arrays.asList(cli1, cli2))); 
+		clienteRepository.saveAll(Arrays.asList(cli1, cli2));
+		enderecoRepository.saveAll(Arrays.asList(e1, e2, e3));
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
@@ -438,8 +438,8 @@ public class PedidoApplication implements CommandLineRunner {
 
 		ped2.setPagamento(pagto2);
 
-		pedidoRepository.saveAll(new HashSet<Pedido>(Arrays.asList(ped1, ped2)));
-		pagamentoRepository.saveAll(new HashSet<Pagamento>(Arrays.asList(pagto1, pagto2)));
+		pedidoRepository.saveAll(Arrays.asList(ped1, ped2));
+		pagamentoRepository.saveAll(Arrays.asList(pagto1, pagto2));
 
 		ItemPedido ip1 = new ItemPedido();
 		ip1.setDesconto(0.00);
@@ -462,6 +462,6 @@ public class PedidoApplication implements CommandLineRunner {
 		ip3.setProduto(p2);
 		ip3.setPedido(ped2);
 
-		itemPedidoRepository.saveAll(new HashSet<ItemPedido>(Arrays.asList(ip1, ip2, ip3)));
+		itemPedidoRepository.saveAll(Arrays.asList(ip1, ip2, ip3));
 	}
 }

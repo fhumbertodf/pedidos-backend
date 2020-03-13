@@ -6,7 +6,13 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
 @Embeddable
+@Getter @Setter
+@EqualsAndHashCode
 public class ItemPedidoPK implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -18,37 +24,5 @@ public class ItemPedidoPK implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "produto_id")
 	private Produto produto;
-
-	public Pedido getPedido() {
-		return pedido;
-	}
-
-	public void setPedido(Pedido pedido) {
-		this.pedido = pedido;
-	}
-
-	public Produto getProduto() {
-		return produto;
-	}
-
-	public void setProduto(Produto produto) {
-		this.produto = produto;
-	}
-
-	@Override
-	public int hashCode() {
-		return 31;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (!(o instanceof ItemPedidoPK)) {
-			return false;
-		}
-		return pedido != null && pedido.equals(((ItemPedidoPK) o).pedido) && produto != null
-				&& produto.equals(((ItemPedidoPK) o).produto);
-	}
+	
 }
